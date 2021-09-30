@@ -250,14 +250,9 @@ def printReqLab5():
     print("======================== Req Lab5 Respuesta ========================")
     print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
     llave_valor = mp.get(catalog['mediums'], medio)
-    print(llave_valor)
     valor = me.getValue(llave_valor)
-    print(valor)
-# =============================================================================
-#     print('El medio '+medio+' tiene en total '+valor['amount']+' obras.')
-#     for i in range(valor['amount']): 
-#         print(valor['artworks'])
-# =============================================================================
+    print('El medio '+str(medio)+' tiene en total '+str(valor['amount'])+' obras.')
+    print(lt.subList(valor['artworks'],1,n))
     
 def initCatalog():
     """

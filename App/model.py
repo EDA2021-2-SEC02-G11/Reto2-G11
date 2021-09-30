@@ -81,8 +81,7 @@ def addMedium(catalog, mediumkey, artwork):
     """
     Esta función adiciona un medio o técnica al map de medios.
     Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
-    """
-    mediums = catalog['mediums']
+    """ 
     existmedium = mp.contains(catalog['mediums'], mediumkey)
     if existmedium:
         entry = mp.get(catalog['mediums'], mediumkey)
@@ -90,8 +89,8 @@ def addMedium(catalog, mediumkey, artwork):
     else:
         mediumvalue = newMedium(mediumkey)
         mp.put(catalog['mediums'], mediumkey, mediumvalue)
-    lt.addLast(mediums['artworks'], artwork)
-    mediums['amount'] += 1    
+    lt.addLast(mediumvalue['artworks'], artwork)
+    mediumvalue['amount'] += 1   
 
 def addArtwork(catalog, artwork):
     """
@@ -100,13 +99,13 @@ def addArtwork(catalog, artwork):
     """
     lt.addLast(catalog['artworks_DateAcquired'], artwork)
     lt.addLast(catalog['artworks_Date'], artwork)
-    mp.put(catalog['mediums'], artwork['Medium'], artwork)
     ids = artwork['ConstituentID']
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
         addArtworks_Artist(catalog, id_, artwork)
         addNationality(catalog,id_,artwork)
+    addMedium(catalog, artwork['Medium'], artwork)
 
 def addArtworks_Artist(catalog, id_:int, artwork):
     artist_artwork = catalog['artworks_Artist']
@@ -140,8 +139,8 @@ def newMedium(medium):
     mediums = {'medium': '',
               'artworks': None,
               'amount': 0}
-    mediums['name'] = medium
-    mediums['artworks'] = lt.newList('SINGLE_LINKED', compareMediums)
+    mediums['medium'] = medium
+    mediums['artworks'] = lt.newList('ARRAY_LIST', compareArtworks_Date)
     return mediums
 # ----
 
