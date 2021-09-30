@@ -246,17 +246,29 @@ def printReq6():
     
 def printReqLab5():
     medio=input("Ingrese el nombre del medio o técnica: ")
-    n=int(input("Ingrese el número de obrtas que desea consultar: "))
+    n=int(input("Ingrese el número de obras que desea consultar: "))
     print("======================== Req Lab5 Inputs ========================")
     print('Mostrar las '+str(n)+' obras más antiguas para el medio '+medio+'.')
     print("======================== Req Lab5 Respuesta ========================")
-    print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
     llave_valor = mp.get(catalog['mediums'], medio)
     valor = me.getValue(llave_valor)
     sorteada = controller.sortAntiguedad(valor['artworks'])
     print('El medio '+str(medio)+' tiene en total '+str(valor['amount'])+' obras.')
-    print(lt.subList(sorteada,1,n))
-    
+    print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
+    answ = PrettyTable(['Título','Clasificacion','Fecha','Medio',
+                        'Dimensiones'])
+    result=lt.subList(sorteada,1,n)
+    i=1
+    while i<=n:       
+        answ.add_row([lt.getElement(result,i)['Title'],
+                      lt.getElement(result,i)['Classification'],
+                      lt.getElement(result,i)['Date'],
+                      lt.getElement(result,i)['Medium'],
+                      lt.getElement(result,i)['Dimensions']])
+        i+=1
+    answ._max_width = {'Título':40,'Fecha':15,'Adquisición':15,
+                       'Medio':20,'Dimensiones':40}
+    print(answ)
     
 def initCatalog():
     """
