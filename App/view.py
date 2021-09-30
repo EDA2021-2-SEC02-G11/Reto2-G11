@@ -25,7 +25,8 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
-
+import time
+from prettytable import PrettyTable
 
 """
 La vista se encarga de la interacción con el usuario
