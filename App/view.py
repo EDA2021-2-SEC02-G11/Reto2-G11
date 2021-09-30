@@ -24,6 +24,8 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 assert cf
 import time
 from prettytable import PrettyTable
@@ -47,7 +49,8 @@ def printMenu():
     print("Req. No. 4. Clasificar las obras por la nacionalidad de sus creadores.")
     print("Req. No. 5. Transportar obras de un departamento.")
     print("Req. No. 6 (Bono). Proponer una nueva exposición en el museo.")
-    print("7. Detener la ejecución del programa.")
+    print("7. Req. Lab5. n obras más antiguas para un medio específico.")
+    print("8. Detener la ejecución del programa.")
     
 def printloadData():
     print("Cargando información de los archivos ....")
@@ -90,7 +93,6 @@ def printloadData():
     answ1._max_width = {'Título':40,'Medio o técnica':20,'Fecha':20,'Adquisición':40,
                         'Dimensiones':40}
     print(answ1)
-    print(lt.getElement(catalog['artworks_DateAcquired'],30))
     return catalog
     
 def printReq1():
@@ -236,8 +238,26 @@ def printReq5():
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoro: ",str(elapsed_time_mseg))
+    
 def printReq6():
     print("Este requerimiento aún no se ha implementado.")
+    
+def printReqLab5():
+    medio=input("Ingrese el nombre del medio o técnica: ")
+    n=int(input("Ingrese el número de obrtas que desea consultar: "))
+    print("======================== Req Lab5 Inputs ========================")
+    print('Mostrar las '+str(n)+' obras más antiguas para el medio '+medio+'.')
+    print("======================== Req Lab5 Respuesta ========================")
+    print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
+    llave_valor = mp.get(catalog['mediums'], medio)
+    print(llave_valor)
+    valor = me.getValue(llave_valor)
+    print(valor)
+# =============================================================================
+#     print('El medio '+medio+' tiene en total '+valor['amount']+' obras.')
+#     for i in range(valor['amount']): 
+#         print(valor['artworks'])
+# =============================================================================
     
 def initCatalog():
     """
@@ -267,7 +287,7 @@ while True:
         continue
     if inputs == 0:
         catalog=printloadData()
-    elif inputs>0 and inputs<7:
+    elif inputs>0 and inputs<8:
         if type(catalog)!=dict:
             print(error_cargar)
         elif inputs==1:
@@ -282,7 +302,9 @@ while True:
             printReq5()
         elif inputs==6:
             printReq6()
-    elif inputs >= 8:
+        elif inputs==7:
+            printReqLab5()
+    elif inputs >= 9:
         print(error)
     else:
         sys.exit(0)

@@ -29,10 +29,9 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Sorting import mergesort as mer
 assert cf
-import datetime
+from datetime import datetime
 import time
 
 """
@@ -53,13 +52,22 @@ def newCatalog():
                'artworks_DateAcquired': None,
                'artworks_Date': None,
                'artworks_Artist':None,
-               'nationality':None}
+               'nationality':None,
+               'mediums':None}
     
     catalog['artists_BeginDate'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtists_BeginDate)
     catalog['artworks_DateAcquired'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_DateAcquired)
     catalog['artworks_Date'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_Date)
     catalog['artworks_Artist'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_Artist)
     catalog['nationality'] = lt.newList('ARRAY_LIST', cmpfunction=compareNationality)
+    
+    """
+    LAB 5: Este índice crea un map cuya llave es el medio o técnica con el que se realizó la obra
+    """
+    catalog['mediums'] = mp.newMap(21251, # Número de medios distintos en el large, que será el número de llaves
+                                   maptype='CHAINING',
+                                   loadfactor=4.0,
+                                   comparefunction=compareMediums)
 
     return catalog
 
@@ -68,10 +76,31 @@ def newCatalog():
 def addArtist(catalog, artist):
     lt.addLast(catalog['artists_BeginDate'], artist)
     ids=artist["Nationality"]
+    
+def addMedium(catalog, mediumkey, artwork):
+    """
+    Esta función adiciona un medio o técnica al map de medios.
+    Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
+    """
+    mediums = catalog['mediums']
+    existmedium = mp.contains(catalog['mediums'], mediumkey)
+    if existmedium:
+        entry = mp.get(catalog['mediums'], mediumkey)
+        mediumvalue = me.getValue(entry)
+    else:
+        mediumvalue = newMedium(mediumkey)
+        mp.put(catalog['mediums'], mediumkey, mediumvalue)
+    lt.addLast(mediums['artworks'], artwork)
+    mediums['amount'] += 1    
 
 def addArtwork(catalog, artwork):
+    """
+    Esta función adiciona un obra a la lista de obras,
+    Lo guarda en un Map usando como llave su medio.
+    """
     lt.addLast(catalog['artworks_DateAcquired'], artwork)
     lt.addLast(catalog['artworks_Date'], artwork)
+    mp.put(catalog['mediums'], artwork['Medium'], artwork)
     ids = artwork['ConstituentID']
     ids = ids[1:-1].split(",")
     for id_ in ids:
@@ -101,6 +130,20 @@ def addNationality(catalog, id_, artwork):
     lt.addLast(nation_id['artworks'],artwork )
 
 # Funciones para creacion de datos
+
+# LAB 5: 
+def newMedium(medium):
+    """
+    Crea una nueva estructura para modelar los medios o técnicas de una obra. 
+    Se crea una lista para las obras de dicho medio.
+    """
+    mediums = {'medium': '',
+              'artworks': None,
+              'amount': 0}
+    mediums['name'] = medium
+    mediums['artworks'] = lt.newList('SINGLE_LINKED', compareMediums)
+    return mediums
+# ----
 
 def newArtworks_Artist(id_):
     """
@@ -222,33 +265,6 @@ def artist_medium1(catalog, artist):
             lt.addLast(artworks_medium, obra)
     return artist,id_,artworks_by_artist,mediums,artworks_medium,pos_most_used
 
-# Forma alternativa de implementar el Req. 3 sin usar la lista 'artworks_Artist'
-# del catálogo. Esta no es la que se usa porque es más rápido ayudarse con la
-#lista que se carga directamente del catálogo.
-def artist_medium(catalog, artist):
-    mediums= lt.newList('ARRAY_LIST')
-    mediums_count = lt.newList('ARRAY_LIST')
-    artworks_by_artist,artist,id_= artist_artworks(catalog, artist)
-    for i in lt.iterator(artworks_by_artist):
-        posmedium = lt.isPresent(mediums, i['Medium'])
-        if posmedium <= 0: # Si no está el medio en la lista de medios
-            lt.addLast(mediums, i['Medium'])
-            lt.addLast(mediums_count, 1)
-        else: # Si sí está el medio en la lista de medios
-            lt.changeInfo(mediums_count, posmedium, lt.getElement(mediums_count, posmedium)+1)
-    greatest=0
-    pos_actual=0
-    for cuenta_medium in lt.iterator(mediums_count):
-        pos_actual+=1
-        if cuenta_medium > greatest:
-            greatest=cuenta_medium
-            pos_most_used=pos_actual
-    artworks_medium= lt.newList('ARRAY_LIST')        
-    for obra in lt.iterator(artworks_by_artist):
-        if obra['Medium']==lt.getElement(mediums,pos_most_used):
-            lt.addLast(artworks_medium, obra)
-    return artist,id_,artworks_by_artist,mediums,artworks_medium,pos_most_used
-
 # Req. 4
 
 def id_nation(catalog, ids):
@@ -343,27 +359,24 @@ def transport(catalog, department):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
+#LAB 5:
+
+def compareMediums(keyname,medium):
     """
-    Compara dos obras de arte por la fecha en la que fueron adquiridas, 
-    'DateAcquired'.
+    Compara dos medios. El primero es una cadena
+    y el segundo un entry de un map
+    """
+    mediumentry = me.getKey(medium)
+    if (keyname == mediumentry):
+        return 0
+    elif (keyname > mediumentry):
+        return 1
+    else:
+        return -1
     
-    Si el 'DateAcquired' de una obra de arte es vacío, la obra se toma como 
-    la más antigua.
+#---
 
-    Parámetros
-    ----------
-    artwork1 : dict
-        Informacion de la primera obra que incluye su valor 'DateAcquired'.
-    artwork2 : dict
-        Informacion de la segunda obra que incluye su valor 'DateAcquired'.
-
-    Retorno
-    -------
-    int
-        0 si artwork1 fue adquirido más recientemente que artwork2.
-        -1 si artwork2 fue adquirido más recientemente que artwork1.
-    """
+def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
     if artwork1["DateAcquired"]=="" or artwork2["DateAcquired"]=="":
         if artwork1["DateAcquired"]=="":
             return -1
