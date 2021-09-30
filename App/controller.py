@@ -80,6 +80,9 @@ def sortArtworks_Date(catalog):
 def sortNationality(catalog):
     return model.sortNationality(catalog)
 
+def sortAntiguedad(catalog):
+    return model.sortAntiguedad(catalog)
+
 # Funciones de consulta sobre el catálogo
 
 def rangoArtists(catalog, anio1, anio2):

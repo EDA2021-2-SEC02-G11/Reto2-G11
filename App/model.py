@@ -451,3 +451,10 @@ def sortNationality(catalog):
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list
+
+def sortAntiguedad(lista):
+    start_time = time.process_time()
+    sorted_list= mer.sort(lista, compareArtworks_Date)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    return sorted_list 

@@ -30,6 +30,8 @@ assert cf
 import time
 from prettytable import PrettyTable
 
+from DISClib.Algorithms.Sorting import mergesort as mer
+
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -251,8 +253,10 @@ def printReqLab5():
     print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
     llave_valor = mp.get(catalog['mediums'], medio)
     valor = me.getValue(llave_valor)
+    sorteada = controller.sortAntiguedad(valor['artworks'])
     print('El medio '+str(medio)+' tiene en total '+str(valor['amount'])+' obras.')
-    print(lt.subList(valor['artworks'],1,n))
+    print(lt.subList(sorteada,1,n))
+    
     
 def initCatalog():
     """
