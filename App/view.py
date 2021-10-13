@@ -253,7 +253,7 @@ def printReqLab5():
     llave_valor = mp.get(catalog['mediums'], medio)
     valor = me.getValue(llave_valor)
     sorteada = controller.sortAntiguedad(valor['artworks'])
-    print('El medio '+str(medio)+' tiene en total '+str(valor['amount'])+' obras.')
+    print('El medio '+str(medio)+' tiene en total '+str(valor['size'])+' obras.')
     print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
     answ = PrettyTable(['Título','Clasificacion','Fecha','Medio',
                         'Dimensiones'])

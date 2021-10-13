@@ -61,13 +61,19 @@ def newCatalog():
     catalog['artworks_Artist'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_Artist)
     catalog['nationality'] = lt.newList('ARRAY_LIST', cmpfunction=compareNationality)
     
-    """
-    LAB 5: Este índice crea un map cuya llave es el medio o técnica con el que se realizó la obra
-    """
-    catalog['mediums'] = mp.newMap(21251, # Número de medios distintos en el large, que será el número de llaves
+    # LAB 5. key: 'Medium', value: array of artworks by medium.
+
+    catalog['mediums'] = mp.newMap(21251, # Number of mediums in 'large' file.
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareMediums)
+
+    # LAB 6. key: 'Nationality', value: array of artworks by artists' nationality.
+    
+    catalog['nationalities'] = mp.newMap(21251, # TODO: Number of nationalities in 'large' file.
+                                   maptype='CHAINING',
+                                   loadfactor=4.0,
+                                   comparefunction=compareNationalities)
 
     return catalog
 
@@ -76,6 +82,8 @@ def newCatalog():
 def addArtist(catalog, artist):
     lt.addLast(catalog['artists_BeginDate'], artist)
     ids=artist["Nationality"]
+
+# LAB 5
     
 def addMedium(catalog, mediumkey, artwork):
     """
@@ -90,7 +98,25 @@ def addMedium(catalog, mediumkey, artwork):
         mediumvalue = newMedium(mediumkey)
         mp.put(catalog['mediums'], mediumkey, mediumvalue)
     lt.addLast(mediumvalue['artworks'], artwork)
-    mediumvalue['amount'] += 1   
+    mediumvalue['size'] += 1   
+
+# LAB 6
+
+def addNationality(catalog, nationality_key, artwork):
+    """
+    Adds a new nationality to nationalities map.
+    """ 
+    nationality_exists = mp.contains(catalog['nationalities'], nationality_key)
+    if nationality_exists:
+        entry = mp.get(catalog['nationalities'], nationality_key)
+        nationality_value = me.getValue(entry)
+    else:
+        nationality_value = newNationality(nationality_key)
+        mp.put(catalog['nationalities'], nationality_key, nationality_value)
+    lt.addLast(nationality_value['artworks'], artwork)
+    nationality_value['size'] += 1   
+
+# --
 
 def addArtwork(catalog, artwork):
     """
@@ -130,7 +156,7 @@ def addNationality(catalog, id_, artwork):
 
 # Funciones para creacion de datos
 
-# LAB 5: 
+# LAB 5
 def newMedium(medium):
     """
     Crea una nueva estructura para modelar los medios o técnicas de una obra. 
@@ -138,10 +164,23 @@ def newMedium(medium):
     """
     mediums = {'medium': '',
               'artworks': None,
-              'amount': 0}
+              'size': 0}
     mediums['medium'] = medium
     mediums['artworks'] = lt.newList('ARRAY_LIST', compareArtworks_Date)
     return mediums
+
+# LAB 6
+def newNationality(nationality):
+    """
+    Creates structure with array of all artworks with artists that share nationality
+    """
+    nationality_value = {'nationality': '',
+                        'artworks': None,
+                        'size': 0}
+    nationality_value['nationality'] = nationality
+    nationality_value['artworks'] = lt.newList('ARRAY_LIST', compareArtworks_Date)
+    return nationality_value
+
 # ----
 
 def newArtworks_Artist(id_):
@@ -358,21 +397,38 @@ def transport(catalog, department):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-#LAB 5:
+# LAB 5
 
 def compareMediums(keyname,medium):
     """
     Compara dos medios. El primero es una cadena
     y el segundo un entry de un map
     """
-    mediumentry = me.getKey(medium)
-    if (keyname == mediumentry):
+    medium_key = me.getKey(medium)
+    if (keyname == medium_key):
         return 0
-    elif (keyname > mediumentry):
+    elif (keyname > medium_key):
         return 1
     else:
         return -1
     
+# LAB 6
+
+def compareNationalities(keyname,nationality):
+    """
+    Compares two nationalities
+
+    keyname: string
+    nationality: map entry (dict)
+    """
+    nationality_key = me.getKey(nationality)
+    if (keyname == nationality_key):
+        return 0
+    elif (keyname > nationality_key):
+        return 1
+    else:
+        return -1
+
 #---
 
 def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
