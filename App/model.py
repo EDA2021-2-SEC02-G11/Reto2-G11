@@ -68,7 +68,7 @@ def newCatalog():
 
     # LAB 6. key: 'Nationality', value: array of artworks by artists' nationality.
     
-    catalog['nationalities'] = mp.newMap(21251, # TODO: Number of nationalities in 'large' file.
+    catalog['nationalities'] = mp.newMap(119, # Number of nationalities in 'large' file.
                                    maptype='CHAINING',
                                    loadfactor=4.0,
                                    comparefunction=compareNationalities)
@@ -145,6 +145,7 @@ def addArtworks_Artist(catalog, id_:int, artwork):
 # Funciones para creacion de datos
 
 # LAB 5
+
 def newMedium(medium):
     """
     Crea una nueva estructura para modelar los medios o técnicas de una obra. 
@@ -158,6 +159,7 @@ def newMedium(medium):
     return mediums
 
 # LAB 6
+
 def newNationality(nationality):
     """
     Creates structure with array of all artworks with artists that share nationality
@@ -183,6 +185,7 @@ def newArtworks_Artist(id_):
 # Funciones de consulta
 
 # Req. 1
+
 def rangoArtists(catalog, anio1, anio2):
     artists = catalog["artists_BeginDate"].copy()
     start_time = time.process_time()
@@ -207,6 +210,7 @@ def rangoArtists(catalog, anio1, anio2):
     return answ
 
 # Req. 2
+
 def rangoArtworks(catalog, fecha1, fecha2):
     artworks = catalog["artworks_DateAcquired"].copy()
     start_time = time.process_time()
@@ -232,6 +236,7 @@ def rangoArtworks(catalog, fecha1, fecha2):
     return answ
 
 # Req. 3
+
 def id_artist(catalog, artist):
     """
     reorna el id de un artista. O(n)
