@@ -52,14 +52,12 @@ def newCatalog():
                'artworks_DateAcquired': None,
                'artworks_Date': None,
                'artworks_Artist':None,
-               'nationality':None,
                'mediums':None}
     
     catalog['artists_BeginDate'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtists_BeginDate)
     catalog['artworks_DateAcquired'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_DateAcquired)
     catalog['artworks_Date'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_Date)
     catalog['artworks_Artist'] = lt.newList('ARRAY_LIST', cmpfunction=compareArtworks_Artist)
-    catalog['nationality'] = lt.newList('ARRAY_LIST', cmpfunction=compareNationality)
     
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
@@ -83,6 +81,21 @@ def addArtist(catalog, artist):
     lt.addLast(catalog['artists_BeginDate'], artist)
     ids=artist["Nationality"]
 
+def addArtwork(catalog, artwork):
+    """
+    Esta función adiciona un obra a la lista de obras,
+    Lo guarda en un Map usando como llave su medio.
+    """
+    lt.addLast(catalog['artworks_DateAcquired'], artwork)
+    lt.addLast(catalog['artworks_Date'], artwork)
+    ids = artwork['ConstituentID']
+    ids = ids[1:-1].split(",")
+    for id_ in ids:
+        id_ = int(id_.strip())
+        addArtworks_Artist(catalog, id_, artwork)
+        addNationality(catalog,id_,artwork)
+    addMedium(catalog, artwork['Medium'], artwork)
+
 # LAB 5
     
 def addMedium(catalog, mediumkey, artwork):
@@ -102,10 +115,11 @@ def addMedium(catalog, mediumkey, artwork):
 
 # LAB 6
 
-def addNationality(catalog, nationality_key, artwork):
+def addNationality(catalog, id_, artwork):
     """
     Adds a new nationality to nationalities map.
     """ 
+    nationality_key=id_nation(catalog,id_)
     nationality_exists = mp.contains(catalog['nationalities'], nationality_key)
     if nationality_exists:
         entry = mp.get(catalog['nationalities'], nationality_key)
@@ -118,21 +132,6 @@ def addNationality(catalog, nationality_key, artwork):
 
 # --
 
-def addArtwork(catalog, artwork):
-    """
-    Esta función adiciona un obra a la lista de obras,
-    Lo guarda en un Map usando como llave su medio.
-    """
-    lt.addLast(catalog['artworks_DateAcquired'], artwork)
-    lt.addLast(catalog['artworks_Date'], artwork)
-    ids = artwork['ConstituentID']
-    ids = ids[1:-1].split(",")
-    for id_ in ids:
-        id_ = int(id_.strip())
-        addArtworks_Artist(catalog, id_, artwork)
-        addNationality(catalog,id_,artwork)
-    addMedium(catalog, artwork['Medium'], artwork)
-
 def addArtworks_Artist(catalog, id_:int, artwork):
     artist_artwork = catalog['artworks_Artist']
     posartist = lt.isPresent(artist_artwork, id_)
@@ -142,17 +141,6 @@ def addArtworks_Artist(catalog, id_:int, artwork):
         artist_id = newArtworks_Artist(id_)
         lt.addLast(artist_artwork, artist_id)
     lt.addLast(artist_id['artworks'],artwork )
-
-def addNationality(catalog, id_, artwork):
-    nationality = catalog['nationality']
-    nation=id_nation(catalog,id_)
-    posnationality = lt.isPresent(nationality, nation)
-    if posnationality > 0:
-        nation_id = lt.getElement(nationality, posnationality)
-    else:
-        nation_id = newNationality(nation)
-        lt.addLast(nationality, nation_id)
-    lt.addLast(nation_id['artworks'],artwork )
 
 # Funciones para creacion de datos
 
@@ -191,15 +179,6 @@ def newArtworks_Artist(id_):
     answ['artist'] = id_
     answ['artworks'] = lt.newList('ARRAY_LIST')
     return answ
-
-def newNationality(nation):
-    """
-    Crea una nueva estructura para modelar los autores de cada obra
-    """
-    nationality = {'nation':"",'artworks':None}
-    nationality['nation'] = nation
-    nationality['artworks'] = lt.newList('ARRAY_LIST')
-    return nationality
 
 # Funciones de consulta
 
@@ -464,16 +443,6 @@ def compareArtworks_Date(artwork1,artwork2):
         return -1
     return 0
 
-def compareNationality(artist_id, artist):
-    if artist_id == artist['nation']:
-        return 0
-    return -1
-
-def compareNationality2(nation1, nation2):
-    if lt.size(nation1["artworks"]) < lt.size(nation2["artworks"]):
-        return -1
-    return 0
-
 # Funciones de ordenamiento
 
 def sortArtists_BeginDate(catalog):
@@ -496,14 +465,6 @@ def sortArtworks_Date(catalog):
     sub_list = catalog["artworks_Date"].copy()
     start_time = time.process_time()
     sorted_list= mer.sort(sub_list, compareArtworks_Date)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
-    return elapsed_time_mseg, sorted_list
-
-def sortNationality(catalog):
-    sub_list = catalog["nationality"].copy()
-    start_time = time.process_time()
-    sorted_list= mer.sort(sub_list, compareNationality2)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     return elapsed_time_mseg, sorted_list

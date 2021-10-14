@@ -77,9 +77,6 @@ def sortArtworks_DateAcquired(catalog):
 def sortArtworks_Date(catalog):
     return model.sortArtworks_Date(catalog)
 
-def sortNationality(catalog):
-    return model.sortNationality(catalog)
-
 def sortAntiguedad(catalog):
     return model.sortAntiguedad(catalog)
 

@@ -52,7 +52,8 @@ def printMenu():
     print("Req. No. 5. Transportar obras de un departamento.")
     print("Req. No. 6 (Bono). Proponer una nueva exposición en el museo.")
     print("7. Req. Lab5. n obras más antiguas para un medio específico.")
-    print("8. Detener la ejecución del programa.")
+    print("8. Req. Lab6. número de obras de una nacionalidad.")
+    print("9. Detener la ejecución del programa.")
     
 def printloadData():
     print("Cargando información de los archivos ....")
@@ -61,11 +62,9 @@ def printloadData():
     artist=controller.sortArtists_BeginDate(catalog)
     artwork=controller.sortArtworks_DateAcquired(catalog)
     artwork_date=controller.sortArtworks_Date(catalog)
-    nationality=controller.sortNationality(catalog)
     catalog["artists_BeginDate"]=artist[1]
     catalog["artworks_DateAquired"]=artwork[1]
     catalog["artworks_Date"]=artwork_date[1]
-    catalog["nationality"]=nationality[1]
     print('Número de artistas en el catálogo: ',
           str(lt.size(catalog['artists_BeginDate'])))
     print('Número de obras de arte en el catálogo: ',
@@ -177,38 +176,9 @@ def printReq3():
     print("Se demoro: ",str(elapsed_time_mseg))
     
 def printReq4(catalog):
-    start_time = time.process_time()
-    print("======================== Req No. 4 Inputs ========================")
-    print("Ranking de paises por su numero de obras en el MoMa ")
-    print("======================== Req No. 4 Respuesta ========================")
-    print("Top 10 paises en el MoMa son:")
-    answ = PrettyTable(['Nacionalidad','Obras'])
-    for i in [0,-1,-2,-3,-4,-5,-6,-7,-8,-9]:
-        answ.add_row([lt.getElement(catalog['nationality'],i)['nation'],
-                      lt.size(lt.getElement(catalog['nationality'],i)['artworks'])])
-    answ._max_width = {'Título':40,'Obras':20}
-    print(answ)
-    mejor=lt.getElement(catalog['nationality'],0)
-    print("La nacionalidad top en el museo es ", mejor["nation"], " con ",lt.size(mejor["artworks"]))
-    print("Las primeras y ultimos 3 objetos para las obras de ",mejor["nation"]," son:")
-    answ = PrettyTable(['ID','Titulo',"Nombre del artista","Medium","Fecha",
-                        "Dimensiones","Departamento","Clasificacion","URL"])
-    for i in [1,2,3,-2,-1,0]:
-        answ.add_row([lt.getElement(mejor["artworks"],i)['ObjectID'],
-                      lt.getElement(mejor["artworks"],i)['Title'],
-                      lt.getElement(mejor["artworks"],i)['ConstituentID'],
-                      lt.getElement(mejor["artworks"],i)['Medium'],
-                      lt.getElement(mejor["artworks"],i)['Date'],
-                      lt.getElement(mejor["artworks"],i)['Dimensions'],
-                      lt.getElement(mejor["artworks"],i)['Department'],
-                      lt.getElement(mejor["artworks"],i)['Classification'],
-                      lt.getElement(mejor["artworks"],i)['URL']])
-    answ._max_width = {'ID':20,'Titulo':40,"Nombre del artista":20,"Medium":20,
-                    "Fecha":20,"Dimensiones":20,"Departamento":20,"Clasificacion":20,"URL":40}
-    print(answ)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
-    print("Se demoro: ",str(elapsed_time_mseg))
+    print("""Removimos temporalmente este requisito para
+            la entrega de l laboratorio 6. Cuando sea la 
+            entrega del reto 2, estará implementado con maps.""")
     
 def printReq5():
     department=input("Ingrese el nombre del departamento: ")
@@ -269,6 +239,16 @@ def printReqLab5():
     answ._max_width = {'Título':40,'Fecha':15,'Adquisición':15,
                        'Medio':20,'Dimensiones':40}
     print(answ)
+
+def printReqLab6():
+    nacionalidad=input("Ingrese la nacionalidad: ")
+    print("======================== Req Lab5 Inputs ========================")
+    print("""Contar el número total de obras de una nacionalidad utilizando el 
+            índice creado por la propiedad "Nationality". """)
+    print("======================== Req Lab5 Respuesta ========================")
+    llave_valor = mp.get(catalog['nationalities'], nacionalidad)
+    valor = me.getValue(llave_valor)
+    print('La nacionalidad '+str(nacionalidad)+' tiene en total '+str(valor['size'])+' obras.')
     
 def initCatalog():
     """
@@ -288,7 +268,7 @@ catalog = None
 Menú principal
 """
 while True:
-    error = "\nError: Por favor ingrese un número entero entre 0 y 7.\n"
+    error = "\nError: Por favor ingrese un número entero entre 0 y 8.\n"
     error_cargar= "\nError: Se deben cargar los datos antes de usar los requisitos.\n"
     printMenu()
     try:
@@ -298,7 +278,7 @@ while True:
         continue
     if inputs == 0:
         catalog=printloadData()
-    elif inputs>0 and inputs<8:
+    elif inputs>0 and inputs<9:
         if type(catalog)!=dict:
             print(error_cargar)
         elif inputs==1:
@@ -315,7 +295,9 @@ while True:
             printReq6()
         elif inputs==7:
             printReqLab5()
-    elif inputs >= 9:
+        elif inputs==8:
+            printReqLab6()
+    elif inputs >= 10:
         print(error)
     else:
         sys.exit(0)
