@@ -62,15 +62,15 @@ def newCatalog():
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
     catalog['mediums'] = mp.newMap(21251, # Number of mediums in 'large' file.
-                                   maptype='CHAINING',
-                                   loadfactor=4.0,
+                                   maptype='PROBING',
+                                   loadfactor=0.2,
                                    comparefunction=compareMediums)
 
     # LAB 6. key: 'Nationality', value: array of artworks by artists' nationality.
     
     catalog['nationalities'] = mp.newMap(119, # Number of nationalities in 'large' file.
-                                   maptype='CHAINING',
-                                   loadfactor=4.0,
+                                   maptype='PROBING',
+                                   loadfactor=0.2,
                                    comparefunction=compareNationalities)
 
     return catalog

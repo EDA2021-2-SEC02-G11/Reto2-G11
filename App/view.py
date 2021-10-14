@@ -56,6 +56,7 @@ def printMenu():
     print("9. Detener la ejecución del programa.")
     
 def printloadData():
+    start_time = time.process_time()
     print("Cargando información de los archivos ....")
     catalog = initCatalog()
     loadData(catalog)
@@ -65,11 +66,13 @@ def printloadData():
     catalog["artists_BeginDate"]=artist[1]
     catalog["artworks_DateAquired"]=artwork[1]
     catalog["artworks_Date"]=artwork_date[1]
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
     print('Número de artistas en el catálogo: ',
           str(lt.size(catalog['artists_BeginDate'])))
     print('Número de obras de arte en el catálogo: ',
           str(lt.size(catalog['artworks_DateAquired'])))
-    print("Se demoro: ",str(artist[0]))
+    #print("Se demoro: ",str(artist[0]))
     print('\nÚltimos tres artistas cargados:\n')
     answ = PrettyTable(['Nombre','Nacimiento','Fallecimiento'
                         ,'Nacionalidad','Género'])
@@ -81,7 +84,7 @@ def printloadData():
                       lt.getElement(catalog['artists_BeginDate'],i)['Gender']])
     answ._max_width = {'Nombre':40}
     print(answ)
-    print("Se demoro: ",str(artwork[0]))
+    #print("Se demoro: ",str(artwork[0]))
     print('\nÚltimas tres obras de arte cargadas:\n')
     answ1 = PrettyTable(['Título','Medio o técnica','Fecha'
                         ,'Adquisición','Dimensiones'])
@@ -94,6 +97,7 @@ def printloadData():
     answ1._max_width = {'Título':40,'Medio o técnica':20,'Fecha':20,'Adquisición':40,
                         'Dimensiones':40}
     print(answ1)
+    print("Se demoro: ",str(elapsed_time_mseg))
     return catalog
     
 def printReq1():
