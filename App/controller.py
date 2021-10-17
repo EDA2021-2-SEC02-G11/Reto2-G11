@@ -66,36 +66,15 @@ def loadArtworks(catalog):
     for artwork in input_file:
         model.addArtwork(catalog, artwork)
 
+# requirements
+
+def requirement1(catalog, initial_year, final_year):
+    return model.requirement1(catalog, initial_year, final_year)
+
+def requirement3(catalog, artist):
+    return model.requirement3(catalog, artist)
+
 # Funciones de ordenamiento
-
-def sortArtists_BeginDate(catalog):
-    return model.sortArtists_BeginDate(catalog)
-
-def sortArtworks_DateAcquired(catalog):
-    return model.sortArtworks_DateAcquired(catalog)
-
-def sortArtworks_Date(catalog):
-    return model.sortArtworks_Date(catalog)
 
 def sortAntiguedad(catalog):
     return model.sortAntiguedad(catalog)
-
-# Funciones de consulta sobre el catálogo
-
-def rangoArtists(catalog, anio1, anio2):
-    return model.rangoArtists(catalog, anio1, anio2)
-
-def rangoArtworks(catalog, fecha1, fecha2):
-    return model.rangoArtworks(catalog, fecha1, fecha2)
-
-def artist_medium(catalog,artist):
-    return model.artist_medium(catalog,artist)
-
-def artist_medium1(catalog,artist):
-    return model.artist_medium1(catalog,artist)
-
-def transport(catalog, department):
-    return model.transport(catalog, department)
-
-def id_artworks(catalog,author):
-    return model.id_artworks(catalog, author)
