@@ -49,25 +49,31 @@ def newCatalog():
 
     # Requirement 1
 
-    catalog['artistsByBeginDate'] = mp.newMap(21251,  # TODO: N. years 'large'
+    catalog['artistsByBeginDate'] = mp.newMap(21251,  # TODO: N. 'BeginDate' la
                                               maptype='PROBING',
                                               loadfactor=0.2,
-                                              comparefunction =
-                                              compareArtistsByBeginDate)
+                                              comparefunction=compareKeys)
+
+    # Requirement 3
+
+    catalog['mediumsByArtist'] = mp.newMap(21251,  # TODO: N. 'Medium' large
+                                           maptype='PROBING',
+                                           loadfactor=0.2,
+                                           comparefunction=compareKeys)
 
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
     catalog['mediums'] = mp.newMap(21251,  # Number of mediums in 'large' file.
                                    maptype='PROBING',
                                    loadfactor=0.2,
-                                   comparefunction=compareMediums)
+                                   comparefunction=compareKeys)
 
     # LAB 6. key: 'Nationality', value: array of artworks by nationality.
 
     catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
                                          maptype='PROBING',
                                          loadfactor=0.2,
-                                         comparefunction=compareNationalities)
+                                         comparefunction=compareKeys)
 
     return catalog
 
@@ -115,24 +121,8 @@ def newBeginDateArray(artist):
     """
     Creates new array for artists born in the same year
     """
-    begin_date_array = lt.newList('ARRAY_LIST', compareArtistsByBeginDate)
+    begin_date_array = lt.newList('ARRAY_LIST', compareKeys)
     return begin_date_array
-
-
-def compareArtistsByBeginDate(keyname, year):
-    """
-    Compares two years
-
-    keyname: string
-    year: map entry (dict)
-    """
-    year_key = me.getKey(year)
-    if keyname == year_key:
-        return 0
-    elif keyname > year_key:
-        return 1
-    else:
-        return -1
 
 
 def requirement1(catalog, initial_year, final_year):
@@ -178,7 +168,7 @@ def addMedium(catalog, mediumkey, artwork):
     """
     Esta función adiciona un medio o técnica al map de medios.
     Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
-    """ 
+    """
     existmedium = mp.contains(catalog['mediums'], mediumkey)
     if existmedium:
         entry = mp.get(catalog['mediums'], mediumkey)
@@ -201,20 +191,6 @@ def newMedium(medium):
     mediums['medium'] = medium
     mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return mediums
-
-
-def compareMediums(keyname, medium):
-    """
-    Compara dos medios. El primero es una cadena
-    y el segundo un entry de un map
-    """
-    medium_key = me.getKey(medium)
-    if (keyname == medium_key):
-        return 0
-    elif (keyname > medium_key):
-        return 1
-    else:
-        return -1
 
 # LAB 6
 
@@ -261,22 +237,6 @@ def newNationality(nationality):
     return nationality_value
 
 
-def compareNationalities(keyname, nationality):
-    """
-    Compares two nationalities
-
-    keyname: string
-    nationality: map entry (dict)
-    """
-    nationality_key = me.getKey(nationality)
-    if (keyname == nationality_key):
-        return 0
-    elif (keyname > nationality_key):
-        return 1
-    else:
-        return -1
-
-
 def compareArtworksByDate(artwork1, artwork2):
     """
     Por antiguedad. Deja las que no tienen fecha al final.
@@ -288,6 +248,25 @@ def compareArtworksByDate(artwork1, artwork2):
     elif artwork1["Date"] <= artwork2["Date"]:
         return -1
     return 0
+
+
+# Funciones de comparación genéricas
+
+def compareKeys(key, entry):
+    """
+    Compares key with entry
+
+    keyname: string
+    entry: map entry (dict)
+    """
+    entry_key = me.getKey(entry)
+    if key == entry_key:
+        return 0
+    elif key > entry_key:
+        return 1
+    else:
+        return -1
+
 
 # Funciones de ordenamiento
 

@@ -40,7 +40,7 @@ def printMenu():
     print("Req. No. 1. Listar cronológicamente los artistas.")
     print("Req. No. 2. Listar cronológicamente las adquisiciones.")
     print("Req. No. 3. Clasificar las obras de un artista por técnica.")
-    print("""Req. No. 4. Clasificar las obras por la nacionalidad de sus 
+    print("""Req. No. 4. Clasificar las obras por la nacionalidad de sus
           creadores.""")
     print("Req. No. 5. Transportar obras de un departamento.")
     print("Req. No. 6 (Bono). Proponer una nueva exposición en el museo.")
@@ -56,13 +56,13 @@ def printloadData():
     loadData(catalog)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print('Número de artistas en el catálogo: '+
+    print('Número de artistas en el catálogo: ' +
           str(lt.size(catalog['artists'])))
-    print('Número de obras de arte en el catálogo: '+
+    print('Número de obras de arte en el catálogo: ' +
           str(lt.size(catalog['artworks'])))
     print('\nÚltimos tres artistas cargados:\n')
-    answ = PrettyTable(['Nombre', 'Nacimiento', 'Fallecimiento', 'Nacionalidad',
-                        'Género'])
+    answ = PrettyTable(['Nombre', 'Nacimiento', 'Fallecimiento',
+                        'Nacionalidad', 'Género'])
     for i in [-2, -1, 0]:
         answ.add_row([lt.getElement(catalog['artists'], i)['DisplayName'],
                       lt.getElement(catalog['artists'], i)['BeginDate'],
@@ -72,7 +72,7 @@ def printloadData():
     answ._max_width = {'Nombre': 40}
     print(answ)
     print('\nÚltimas tres obras de arte cargadas:\n')
-    answ1 = PrettyTable(['Título', 'Medio o técnica', 'Fecha', 'Adquisición', 
+    answ1 = PrettyTable(['Título', 'Medio o técnica', 'Fecha', 'Adquisición',
                          'Dimensiones'])
     for i in [-2, -1, 0]:
         answ1.add_row([lt.getElement(catalog['artworks'], i)['Title'],
@@ -80,7 +80,7 @@ def printloadData():
                       lt.getElement(catalog['artworks'], i)['Date'],
                       lt.getElement(catalog['artworks'], i)['DateAcquired'],
                       lt.getElement(catalog['artworks'], i)['Dimensions']])
-    answ1._max_width = {'Título': 40, 'Medio o técnica': 20, 'Fecha': 20, 
+    answ1._max_width = {'Título': 40, 'Medio o técnica': 20, 'Fecha': 20,
                         'Adquisición': 40, 'Dimensiones': 40}
     print(answ1)
     print("La función de cargar datos demoró "+str(elapsed_time_mseg)+' ms.')
@@ -108,7 +108,7 @@ def printReq1():
                       lt.getElement(muestra, i)['Nationality'],
                       lt.getElement(muestra, i)['Gender']])
     answ._max_width = {'Nombre': 40}
-    print(answ)  
+    print(answ)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoró: "+str(elapsed_time_mseg))
@@ -143,14 +143,14 @@ def printReq2():
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoro: ",str(elapsed_time_mseg))
-    
+
 
 def printReq3():
     artist = input("Ingrese el nombre del artista: ")
     start_time = time.process_time()
     result = controller.requirement3(catalog, artist)
 
-    
+
 def printReq4(catalog):
     print("Este requerimiento aún no se ha implementado.")
 
@@ -177,9 +177,9 @@ def printReqLab5():
     print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
     answ = PrettyTable(['Título', 'Clasificacion', 'Fecha', 'Medio',
                         'Dimensiones'])
-    result=lt.subList(sorteada, 1, n)
-    i=1
-    while i<=n:       
+    result = lt.subList(sorteada, 1, n)
+    i = 1
+    while i <= n:
         answ.add_row([lt.getElement(result, i)['Title'],
                       lt.getElement(result, i)['Classification'],
                       lt.getElement(result, i)['Date'],
