@@ -129,13 +129,39 @@ def compareArtistsByBeginDate(keyname,year):
 
 
 def requirement1(catalog, initial_year, final_year):
-    answ = lt.newList('ARRAY_LIST', key = 'BeginDate')
-    for year in range(initial_year, final_year+1):
+    count = 0
+    muestra = lt.newList('ARRAY_LIST', key = 'BeginDate')
+    year_0 = initial_year-1
+    while year_0 <= final_year and lt.size(muestra) < 3:
+        year_0 += 1
+        entry = mp.get(catalog['artistsByBeginDate'], year_0)
+        artists_by_year = me.getValue(entry)
+        count += lt.size(artists_by_year)
+        i = 1
+        while i <= lt.size(artists_by_year):            
+            artist = lt.getElement(artists_by_year,i)
+            lt.addLast(muestra, artist)
+            if lt.size(muestra) >= 3:
+                break
+            i += 1
+    year_f = final_year+1
+    while year_f >= initial_year and lt.size(muestra) < 6:
+        year_f -= 1
+        entry = mp.get(catalog['artistsByBeginDate'], year_f)
+        artists_by_year = me.getValue(entry)
+        count += lt.size(artists_by_year)
+        i = lt.size(artists_by_year)
+        while i > 0:            
+            artist = lt.getElement(artists_by_year,i)
+            lt.addLast(muestra, artist)
+            if lt.size(muestra) >= 6:
+                break
+            i -= 1
+    for year in range(year_0+1, year_f):
         entry = mp.get(catalog['artistsByBeginDate'], year)
         artists_by_year = me.getValue(entry)
-        for artist in lt.iterator(artists_by_year):
-            lt.addLast(answ, artist)
-    return answ
+        count += lt.size(artists_by_year)
+    return count, muestra
 
 
 # LAB 5

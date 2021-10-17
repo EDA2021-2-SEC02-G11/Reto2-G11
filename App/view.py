@@ -96,20 +96,20 @@ def printReq1():
     initial_year = int(input("Digite un año inicial: "))
     final_year = int(input("Digite un año final: "))
     start_time = time.process_time()
-    result = controller.requirement1(catalog, initial_year, final_year)
+    count, muestra = controller.requirement1(catalog, initial_year, final_year)
     print("======================== Req No. 1 Inputs ========================")
     print("Artistas nacidos entre "+str(initial_year)+" y "+str(final_year)+".")
     print("======================== Req No. 1 Respuesta ========================")
-    print("Hay "+str(lt.size(result))+" artistas nacidos entre "+str(initial_year)+" y "+str(final_year)+".")
+    print("Hay "+str(count)+" artistas nacidos entre "+str(initial_year)+" y "+str(final_year)+".")
     print('\nPrimeros y últimos tres artistas nacidos en el rango de años:\n')
     answ = PrettyTable(['Nombre','Nacimiento','Fallecimiento'
                          ,'Nacionalidad','Género'])
-    for i in [1,2,3,-2,-1,0]:        
-        answ.add_row([lt.getElement(result,i)['DisplayName'],
-                      lt.getElement(result,i)['BeginDate'],
-                   lt.getElement(result,i)['EndDate'],
-                   lt.getElement(result,i)['Nationality'],
-                      lt.getElement(result,i)['Gender']])
+    for i in [1,2,3,0,-1,-2]:
+        answ.add_row([lt.getElement(muestra,i)['DisplayName'],
+                      lt.getElement(muestra,i)['BeginDate'],
+                      lt.getElement(muestra,i)['EndDate'],
+                      lt.getElement(muestra,i)['Nationality'],
+                      lt.getElement(muestra,i)['Gender']])
     answ._max_width = {'Nombre':40}
     print(answ)  
     stop_time = time.process_time()
