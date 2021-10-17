@@ -26,53 +26,58 @@
 
 
 import config as cf
+import time
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as mer
-assert cf
 from datetime import datetime
-import time
+assert cf
 
-# Construccion de modelos
+
+# Construcción de modelos
+
 
 def newCatalog():
     """
-    Inicializa el catálogo de obras de arte. 
+    Inicializa el catálogo de obras de arte.
     """
     catalog = {}
-    
-    catalog['artists'] = lt.newList('ARRAY_LIST', key = 'ConstituentID')
-    catalog['artworks'] = lt.newList('ARRAY_LIST', key = 'ConstituentID')
+
+    catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')
+    catalog['artworks'] = lt.newList('ARRAY_LIST', key='ConstituentID')
 
     # Requirement 1
 
-    catalog['artistsByBeginDate'] = mp.newMap(21251, # TODO: Number of birth-years in 'large' file.
-                                   maptype='PROBING',
-                                   loadfactor=0.2,
-                                   comparefunction=compareArtistsByBeginDate)
-    
+    catalog['artistsByBeginDate'] = mp.newMap(21251,  # TODO: N. years 'large'
+                                              maptype='PROBING',
+                                              loadfactor=0.2,
+                                              comparefunction =
+                                              compareArtistsByBeginDate)
+
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
-    catalog['mediums'] = mp.newMap(21251, # Number of mediums in 'large' file.
+    catalog['mediums'] = mp.newMap(21251,  # Number of mediums in 'large' file.
                                    maptype='PROBING',
                                    loadfactor=0.2,
                                    comparefunction=compareMediums)
 
-    # LAB 6. key: 'Nationality', value: array of artworks by artists' nationality.
-    
-    catalog['nationalities'] = mp.newMap(119, # Number of nationalities in 'large' file.
-                                   maptype='PROBING',
-                                   loadfactor=0.2,
-                                   comparefunction=compareNationalities)
+    # LAB 6. key: 'Nationality', value: array of artworks by nationality.
+
+    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
+                                         maptype='PROBING',
+                                         loadfactor=0.2,
+                                         comparefunction=compareNationalities)
 
     return catalog
 
 # Funciones para agregar información al catalogo invocadas por controller.py
 
+
 def addArtist(catalog, artist):
     addArtistByBeginDate(catalog, artist)
     lt.addLast(catalog['artists'], artist)
+
 
 def addArtwork(catalog, artwork):
     """
@@ -84,23 +89,25 @@ def addArtwork(catalog, artwork):
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
-        addNationality(catalog,id_,artwork)
+        addNationality(catalog, id_, artwork)
     addMedium(catalog, artwork['Medium'], artwork)
 
 # Requirement 1
 
+
 def addArtistByBeginDate(catalog, artist):
     """
     Adds a new artist to artistsByBeginDate map.
-    """ 
+    """
     begin_date = int(artist['BeginDate'])
     begin_date_exists = mp.contains(catalog['artistsByBeginDate'], begin_date)
     if begin_date_exists:
         entry = mp.get(catalog['artistsByBeginDate'], begin_date)
-        artists_of_begin_date = me.getValue(entry) # Array of artists born in begin_date
+        artists_of_begin_date = me.getValue(entry)
     else:
         artists_of_begin_date = newBeginDateArray(artist)
-        mp.put(catalog['artistsByBeginDate'], begin_date, artists_of_begin_date)
+        mp.put(catalog['artistsByBeginDate'], begin_date,
+               artists_of_begin_date)
     lt.addLast(artists_of_begin_date, artist)
 
 
@@ -112,7 +119,7 @@ def newBeginDateArray(artist):
     return begin_date_array
 
 
-def compareArtistsByBeginDate(keyname,year):
+def compareArtistsByBeginDate(keyname, year):
     """
     Compares two years
 
@@ -120,9 +127,9 @@ def compareArtistsByBeginDate(keyname,year):
     year: map entry (dict)
     """
     year_key = me.getKey(year)
-    if (keyname == year_key):
+    if keyname == year_key:
         return 0
-    elif (keyname > year_key):
+    elif keyname > year_key:
         return 1
     else:
         return -1
@@ -130,7 +137,7 @@ def compareArtistsByBeginDate(keyname,year):
 
 def requirement1(catalog, initial_year, final_year):
     count = 0
-    muestra = lt.newList('ARRAY_LIST', key = 'BeginDate')
+    muestra = lt.newList('ARRAY_LIST', key='BeginDate')
     year_0 = initial_year-1
     while year_0 <= final_year and lt.size(muestra) < 3:
         year_0 += 1
@@ -138,8 +145,8 @@ def requirement1(catalog, initial_year, final_year):
         artists_by_year = me.getValue(entry)
         count += lt.size(artists_by_year)
         i = 1
-        while i <= lt.size(artists_by_year):            
-            artist = lt.getElement(artists_by_year,i)
+        while i <= lt.size(artists_by_year):
+            artist = lt.getElement(artists_by_year, i)
             lt.addLast(muestra, artist)
             if lt.size(muestra) >= 3:
                 break
@@ -152,7 +159,7 @@ def requirement1(catalog, initial_year, final_year):
         count += lt.size(artists_by_year)
         i = lt.size(artists_by_year)
         while i > 0:            
-            artist = lt.getElement(artists_by_year,i)
+            artist = lt.getElement(artists_by_year, i)
             lt.addLast(muestra, artist)
             if lt.size(muestra) >= 6:
                 break
@@ -165,7 +172,8 @@ def requirement1(catalog, initial_year, final_year):
 
 
 # LAB 5
-    
+
+
 def addMedium(catalog, mediumkey, artwork):
     """
     Esta función adiciona un medio o técnica al map de medios.
@@ -179,7 +187,7 @@ def addMedium(catalog, mediumkey, artwork):
         mediumvalue = newMedium(mediumkey)
         mp.put(catalog['mediums'], mediumkey, mediumvalue)
     lt.addLast(mediumvalue['artworks'], artwork)
-    mediumvalue['size'] += 1   
+    mediumvalue['size'] += 1
 
 
 def newMedium(medium):
@@ -188,14 +196,14 @@ def newMedium(medium):
     Se crea una lista para las obras de dicho medio.
     """
     mediums = {'medium': '',
-              'artworks': None,
-              'size': 0}
+               'artworks': None,
+               'size': 0}
     mediums['medium'] = medium
-    mediums['artworks'] = lt.newList('ARRAY_LIST', key = 'Date')
+    mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return mediums
 
 
-def compareMediums(keyname,medium):
+def compareMediums(keyname, medium):
     """
     Compara dos medios. El primero es una cadena
     y el segundo un entry de un map
@@ -210,11 +218,12 @@ def compareMediums(keyname,medium):
 
 # LAB 6
 
+
 def addNationality(catalog, id_, artwork):
     """
     Adds a new nationality to nationalities map.
-    """ 
-    nationality_key=id_nation(catalog,id_)
+    """
+    nationality_key = id_nation(catalog, id_)
     nationality_exists = mp.contains(catalog['nationalities'], nationality_key)
     if nationality_exists:
         entry = mp.get(catalog['nationalities'], nationality_key)
@@ -223,7 +232,7 @@ def addNationality(catalog, id_, artwork):
         nationality_value = newNationality(nationality_key)
         mp.put(catalog['nationalities'], nationality_key, nationality_value)
     lt.addLast(nationality_value['artworks'], artwork)
-    nationality_value['size'] += 1   
+    nationality_value['size'] += 1
 
 
 def id_nation(catalog, ids):
@@ -231,27 +240,28 @@ def id_nation(catalog, ids):
     retorna la nacion de un artista. O(n)
     """
     for i in lt.iterator(catalog['artists']):
-        if int(i['ConstituentID'])==int(ids):
+        if int(i['ConstituentID']) == int(ids):
             artist = i["Nationality"]
-            if artist=="" or artist=="Nationality unknown":
-                artist="Unknown"
+            if artist == "" or artist == "Nationality unknown":
+                artist = "Unknown"
             break
     return artist
 
 
 def newNationality(nationality):
     """
-    Creates structure with array of all artworks with artists that share nationality
+    Creates structure with array of all artworks with artists
+    that share nationality
     """
     nationality_value = {'nationality': '',
-                        'artworks': None,
-                        'size': 0}
+                         'artworks': None,
+                         'size': 0}
     nationality_value['nationality'] = nationality
-    nationality_value['artworks'] = lt.newList('ARRAY_LIST', key = 'Date')
+    nationality_value['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return nationality_value
 
 
-def compareNationalities(keyname,nationality):
+def compareNationalities(keyname, nationality):
     """
     Compares two nationalities
 
@@ -266,15 +276,16 @@ def compareNationalities(keyname,nationality):
     else:
         return -1
 
-def compareArtworksByDate(artwork1,artwork2):
+
+def compareArtworksByDate(artwork1, artwork2):
     """
     Por antiguedad. Deja las que no tienen fecha al final.
     """
-    if artwork1["Date"]=="" or artwork2["Date"]=="":
-        if artwork1["Date"]=="":
+    if artwork1["Date"] == "" or artwork2["Date"] == "":
+        if artwork1["Date"] == "":
             return 0
         return -1
-    elif artwork1["Date"]<=artwork2["Date"]:
+    elif artwork1["Date"] <= artwork2["Date"]:
         return -1
     return 0
 
@@ -283,7 +294,7 @@ def compareArtworksByDate(artwork1,artwork2):
 
 def sortAntiguedad(lista):
     start_time = time.process_time()
-    sorted_list= mer.sort(lista, compareArtworksByDate)
+    sorted_list = mer.sort(lista, compareArtworksByDate)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     return sorted_list

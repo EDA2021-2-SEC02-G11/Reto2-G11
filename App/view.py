@@ -23,21 +23,13 @@
 import config as cf
 import sys
 import controller
+import time
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-assert cf
-import time
 from prettytable import PrettyTable
+assert cf
 
-from DISClib.Algorithms.Sorting import mergesort as mer
-
-"""
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
-"""
 
 def printMenu():
     """
@@ -48,85 +40,91 @@ def printMenu():
     print("Req. No. 1. Listar cronológicamente los artistas.")
     print("Req. No. 2. Listar cronológicamente las adquisiciones.")
     print("Req. No. 3. Clasificar las obras de un artista por técnica.")
-    print("Req. No. 4. Clasificar las obras por la nacionalidad de sus creadores.")
+    print("""Req. No. 4. Clasificar las obras por la nacionalidad de sus 
+          creadores.""")
     print("Req. No. 5. Transportar obras de un departamento.")
     print("Req. No. 6 (Bono). Proponer una nueva exposición en el museo.")
     print("7. Req. Lab5. n obras más antiguas para un medio específico.")
     print("8. Req. Lab6. número de obras de una nacionalidad.")
     print("9. Detener la ejecución del programa.")
-    
+
+
 def printloadData():
-    print("Cargando información de los archivos ....")
+    print("Cargando información de los archivos...")
     start_time = time.process_time()
     catalog = initCatalog()
     loadData(catalog)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print('Número de artistas en el catálogo: ',
+    print('Número de artistas en el catálogo: '+
           str(lt.size(catalog['artists'])))
-    print('Número de obras de arte en el catálogo: ',
+    print('Número de obras de arte en el catálogo: '+
           str(lt.size(catalog['artworks'])))
     print('\nÚltimos tres artistas cargados:\n')
-    answ = PrettyTable(['Nombre','Nacimiento','Fallecimiento'
-                        ,'Nacionalidad','Género'])
-    for i in [-2,-1,0]:        
-        answ.add_row([lt.getElement(catalog['artists'],i)['DisplayName'],
-                      lt.getElement(catalog['artists'],i)['BeginDate'],
-                      lt.getElement(catalog['artists'],i)['EndDate'],
-                      lt.getElement(catalog['artists'],i)['Nationality'],
-                      lt.getElement(catalog['artists'],i)['Gender']])
-    answ._max_width = {'Nombre':40}
+    answ = PrettyTable(['Nombre', 'Nacimiento', 'Fallecimiento', 'Nacionalidad',
+                        'Género'])
+    for i in [-2, -1, 0]:
+        answ.add_row([lt.getElement(catalog['artists'], i)['DisplayName'],
+                      lt.getElement(catalog['artists'], i)['BeginDate'],
+                      lt.getElement(catalog['artists'], i)['EndDate'],
+                      lt.getElement(catalog['artists'], i)['Nationality'],
+                      lt.getElement(catalog['artists'], i)['Gender']])
+    answ._max_width = {'Nombre': 40}
     print(answ)
     print('\nÚltimas tres obras de arte cargadas:\n')
-    answ1 = PrettyTable(['Título','Medio o técnica','Fecha'
-                        ,'Adquisición','Dimensiones'])
-    for i in [-2,-1,0]:       
-        answ1.add_row([lt.getElement(catalog['artworks'],i)['Title'],
-                      lt.getElement(catalog['artworks'],i)['Medium'],
-                      lt.getElement(catalog['artworks'],i)['Date'],
-                      lt.getElement(catalog['artworks'],i)['DateAcquired'],
-                      lt.getElement(catalog['artworks'],i)['Dimensions']])
-    answ1._max_width = {'Título':40,'Medio o técnica':20,'Fecha':20,'Adquisición':40,
-                        'Dimensiones':40}
+    answ1 = PrettyTable(['Título', 'Medio o técnica', 'Fecha', 'Adquisición', 
+                         'Dimensiones'])
+    for i in [-2, -1, 0]:
+        answ1.add_row([lt.getElement(catalog['artworks'], i)['Title'],
+                      lt.getElement(catalog['artworks'], i)['Medium'],
+                      lt.getElement(catalog['artworks'], i)['Date'],
+                      lt.getElement(catalog['artworks'], i)['DateAcquired'],
+                      lt.getElement(catalog['artworks'], i)['Dimensions']])
+    answ1._max_width = {'Título': 40, 'Medio o técnica': 20, 'Fecha': 20, 
+                        'Adquisición': 40, 'Dimensiones': 40}
     print(answ1)
-    print("La función de cargar datos demoró: "+str(elapsed_time_mseg)+' ms.')
+    print("La función de cargar datos demoró "+str(elapsed_time_mseg)+' ms.')
     return catalog
-    
+
+
 def printReq1():
     initial_year = int(input("Digite un año inicial: "))
     final_year = int(input("Digite un año final: "))
     start_time = time.process_time()
     count, muestra = controller.requirement1(catalog, initial_year, final_year)
-    print("======================== Req No. 1 Inputs ========================")
-    print("Artistas nacidos entre "+str(initial_year)+" y "+str(final_year)+".")
-    print("======================== Req No. 1 Respuesta ========================")
-    print("Hay "+str(count)+" artistas nacidos entre "+str(initial_year)+" y "+str(final_year)+".")
+    print("========================= Req No. 1 Inputs =======================")
+    print("Artistas nacidos entre "+str(initial_year)+" y "+str(final_year) +
+          '.')
+    print("======================== Req No. 1 Respuesta =====================")
+    print("Hay "+str(count)+" artistas nacidos entre "+str(initial_year) +
+          " y "+str(final_year)+".")
     print('\nPrimeros y últimos tres artistas nacidos en el rango de años:\n')
-    answ = PrettyTable(['Nombre','Nacimiento','Fallecimiento'
-                         ,'Nacionalidad','Género'])
-    for i in [1,2,3,0,-1,-2]:
-        answ.add_row([lt.getElement(muestra,i)['DisplayName'],
-                      lt.getElement(muestra,i)['BeginDate'],
-                      lt.getElement(muestra,i)['EndDate'],
-                      lt.getElement(muestra,i)['Nationality'],
-                      lt.getElement(muestra,i)['Gender']])
-    answ._max_width = {'Nombre':40}
+    answ = PrettyTable(['Nombre', 'Nacimiento', 'Fallecimiento', 
+                        'Nacionalidad', 'Género'])
+    for i in [1, 2, 3, 0, -1, -2]:
+        answ.add_row([lt.getElement(muestra, i)['DisplayName'],
+                      lt.getElement(muestra, i)['BeginDate'],
+                      lt.getElement(muestra, i)['EndDate'],
+                      lt.getElement(muestra, i)['Nationality'],
+                      lt.getElement(muestra, i)['Gender']])
+    answ._max_width = {'Nombre': 40}
     print(answ)  
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print("Se demoró: ",str(elapsed_time_mseg))
-    
+    print("Se demoró: "+str(elapsed_time_mseg))
+
+
 def printReq2():
     fecha1 = input("Ingrese una fecha inicial en formato AAAA-MM-DD: ")
     fecha2 = input("Ingrese una fecha final en formato AAAA-MM-DD: ")
     start_time = time.process_time()
     result = controller.rangoArtworks(catalog, fecha1, fecha2)
-    num_artists = 5 # TODO: FALTA Toca asociar con los artistas para esto
-    num_purchased = 5 # TODO: Falta
+    num_artists = 5  # TODO: FALTA Toca asociar con los artistas para esto
+    num_purchased = 5  # TODO: Falta
     print("======================== Req No. 1 Inputs ========================")
-    print("Obras adquiridas entre ",fecha1," y ",fecha2)
-    print("======================== Req No. 1 Respuesta ========================")
-    print("El MoMA adquirió ",str(lt.size(result))," obras entre ",fecha1,
+    print("Obras adquiridas entre "+fecha1+" y "+fecha2)
+    print("======================== Req No. 1 Respuesta =====================")
+    print("El MoMA adquirió "+str(lt.size(result))+" obras entre ",fecha1,
           " y ",fecha2," con ",str(num_artists),
           " artistas, de las cuales compró ",str(num_purchased))
     print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
@@ -146,49 +144,52 @@ def printReq2():
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoro: ",str(elapsed_time_mseg))
     
+
 def printReq3():
     artist = input("Ingrese el nombre del artista: ")
     start_time = time.process_time()
     result = controller.requirement3(catalog, artist)
-    
 
-
-    print("Este requerimiento aún no se ha implementado.")
     
 def printReq4(catalog):
     print("Este requerimiento aún no se ha implementado.")
-    
+
+
 def printReq5():
     print("Este requerimiento aún no se ha implementado.")
-    
+
+
 def printReq6():
     print("Este requerimiento aún no se ha implementado.")
-    
+
+
 def printReqLab5():
-    medio=input("Ingrese el nombre del medio o técnica: ")
-    n=int(input("Ingrese el número de obras que desea consultar: "))
-    print("======================== Req Lab5 Inputs ========================")
+    medio = input("Ingrese el nombre del medio o técnica: ")
+    n = int(input("Ingrese el número de obras que desea consultar: "))
+    print("======================== Req Lab5 Inputs =========================")
     print('Mostrar las '+str(n)+' obras más antiguas para el medio '+medio+'.')
-    print("======================== Req Lab5 Respuesta ========================")
+    print("====================== Req Lab5 Respuesta ========================")
     llave_valor = mp.get(catalog['mediums'], medio)
     valor = me.getValue(llave_valor)
     sorteada = controller.sortAntiguedad(valor['artworks'])
-    print('El medio '+str(medio)+' tiene en total '+str(valor['size'])+' obras.')
+    print('El medio '+str(medio)+' tiene en total '+str(valor['size'])+
+          ' obras.')
     print('Las '+str(n)+' obras más antiguas para el medio '+medio+' son:')
-    answ = PrettyTable(['Título','Clasificacion','Fecha','Medio',
+    answ = PrettyTable(['Título', 'Clasificacion', 'Fecha', 'Medio',
                         'Dimensiones'])
-    result=lt.subList(sorteada,1,n)
+    result=lt.subList(sorteada, 1, n)
     i=1
     while i<=n:       
-        answ.add_row([lt.getElement(result,i)['Title'],
-                      lt.getElement(result,i)['Classification'],
-                      lt.getElement(result,i)['Date'],
-                      lt.getElement(result,i)['Medium'],
-                      lt.getElement(result,i)['Dimensions']])
+        answ.add_row([lt.getElement(result, i)['Title'],
+                      lt.getElement(result, i)['Classification'],
+                      lt.getElement(result, i)['Date'],
+                      lt.getElement(result, i)['Medium'],
+                      lt.getElement(result, i)['Dimensions']])
         i+=1
     answ._max_width = {'Título':40,'Fecha':15,'Adquisición':15,
                        'Medio':20,'Dimensiones':40}
     print(answ)
+
 
 def printReqLab6():
     nacionalidad=input("Ingrese la nacionalidad: ")
@@ -198,13 +199,16 @@ def printReqLab6():
     print("======================== Req Lab5 Respuesta ========================")
     llave_valor = mp.get(catalog['nationalities'], nacionalidad)
     valor = me.getValue(llave_valor)
-    print('La nacionalidad '+str(nacionalidad)+' tiene en total '+str(valor['size'])+' obras.')
-    
+    print('La nacionalidad '+str(nacionalidad)+' tiene en total '+
+          str(valor['size'])+' obras.')
+
+
 def initCatalog():
     """
     Inicializa el catalogo de libros
     """
     return controller.initCatalog()
+
 
 def loadData(catalog):
     """
