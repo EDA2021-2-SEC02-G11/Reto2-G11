@@ -139,7 +139,6 @@ def requirement1(catalog, initial_year, final_year):
     while year_0 <= final_year and lt.size(muestra) < 3:
         year_0 += 1
         entry = mp.get(catalog['artistsByBeginDate'], year_0)
-        print(entry)
         if entry:
             artists_by_year = me.getValue(entry)
             count += lt.size(artists_by_year)
