@@ -61,6 +61,13 @@ def newCatalog():
                                            loadfactor=0.2,
                                            comparefunction=compareKeys)
 
+    # Requirement 4
+
+    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
+                                         maptype='PROBING',
+                                         loadfactor=0.2,
+                                         comparefunction=compareKeys)
+
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
     catalog['mediums'] = mp.newMap(21251,  # Number of mediums in 'large' file.
@@ -132,15 +139,17 @@ def requirement1(catalog, initial_year, final_year):
     while year_0 <= final_year and lt.size(muestra) < 3:
         year_0 += 1
         entry = mp.get(catalog['artistsByBeginDate'], year_0)
-        artists_by_year = me.getValue(entry)
-        count += lt.size(artists_by_year)
-        i = 1
-        while i <= lt.size(artists_by_year):
-            artist = lt.getElement(artists_by_year, i)
-            lt.addLast(muestra, artist)
-            if lt.size(muestra) >= 3:
-                break
-            i += 1
+        print(entry)
+        if entry:
+            artists_by_year = me.getValue(entry)
+            count += lt.size(artists_by_year)
+            i = 1
+            while i <= lt.size(artists_by_year):
+                artist = lt.getElement(artists_by_year, i)
+                lt.addLast(muestra, artist)
+                if lt.size(muestra) >= 3:
+                    break
+                i += 1 
     year_f = final_year+1
     while year_f >= initial_year and lt.size(muestra) < 6:
         year_f -= 1
@@ -272,8 +281,5 @@ def compareKeys(key, entry):
 
 
 def sortAntiguedad(lista):
-    start_time = time.process_time()
     sorted_list = mer.sort(lista, compareArtworksByDate)
-    stop_time = time.process_time()
-    elapsed_time_mseg = (stop_time - start_time)*1000
     return sorted_list
