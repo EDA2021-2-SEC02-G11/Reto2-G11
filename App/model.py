@@ -54,13 +54,6 @@ def newCatalog():
                                               loadfactor=0.2,
                                               comparefunction=compareKeys)
 
-    # Requirement 2
-
-    catalog['ArtworksByDateAcquired'] = mp.newMap(138150,  # TODO: N. 'DateAcquired' la
-                                              maptype='PROBING',
-                                              loadfactor=0.2,
-                                              comparefunction=compareKeys)
-
     # Requirement 3
 
     catalog['mediumsByArtist'] = mp.newMap(21251,  # TODO: N. 'Medium' large
@@ -104,14 +97,14 @@ def addArtwork(catalog, artwork):
     Esta función adiciona un obra a la lista de obras,
     Lo guarda en un Map usando como llave su medio.
     """
-    addArtworksByDateAcquired(catalog, artwork)
-    lt.addLast(catalog['ArtworksByDateAcquired'], artwork)
+    lt.addLast(catalog['artworks'], artwork)
     ids = artwork['ConstituentID']
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
         addNationality(catalog, id_, artwork)
-    addMedium(catalog, artwork['Medium'], artwork)
+        addArtistMedium(catalog, id_, artwork)
+    addMedium(catalog,  id_, artwork)
 
 # Requirement 1
 
@@ -161,48 +154,58 @@ def requirement1(catalog, initial_year, final_year):
     while year_f >= initial_year and lt.size(muestra) < 6:
         year_f -= 1
         entry = mp.get(catalog['artistsByBeginDate'], year_f)
-        if entry:
-            artists_by_year = me.getValue(entry)
-            count += lt.size(artists_by_year)
-            i = lt.size(artists_by_year)
-            while i > 0:            
-                artist = lt.getElement(artists_by_year, i)
-                lt.addLast(muestra, artist)
-                if lt.size(muestra) >= 6:
-                    break
-                i -= 1
+        artists_by_year = me.getValue(entry)
+        count += lt.size(artists_by_year)
+        i = lt.size(artists_by_year)
+        while i > 0:            
+            artist = lt.getElement(artists_by_year, i)
+            lt.addLast(muestra, artist)
+            if lt.size(muestra) >= 6:
+                break
+            i -= 1
     for year in range(year_0+1, year_f):
         entry = mp.get(catalog['artistsByBeginDate'], year)
-        if entry:
-            artists_by_year = me.getValue(entry)
-            count += lt.size(artists_by_year)
+        artists_by_year = me.getValue(entry)
+        count += lt.size(artists_by_year)
     return count, muestra
 
-# Requirement 2
 
-def addArtworksByDateAcquired(catalog, artwork):
-    """
-    Adds a new artwork to ArtworksByDateAcquired map.
-    """
-    begin_date= datetime.strptime(artwork['DateAcquired'], '%Y-%m-%d').date()
-    begin_date = int(artwork['DateAcquired'])
-    begin_date_exists = mp.contains(catalog['ArtworksByDateAcquired'], begin_date)
-    if begin_date_exists:
-        entry = mp.get(catalog['ArtworksByDateAcquired'], begin_date)
-        artwork_of_date_acquired = me.getValue(entry)
+#Requirement 3
+
+
+def addArtistMedium(catalog, id_, artwork):
+    id_exists = mp.contains(catalog['mediumsByArtist'], id_)
+    if id_exists:
+        entry = mp.get(catalog['mediumsByArtist'], id_)
+        value = me.getValue(entry)
     else:
-        artwork_of_date_acquired = newBeginDateArray(artwork)
-        mp.put(catalog['ArtworksByDateAcquired'], begin_date,
-               artwork_of_date_acquired)
-    lt.addLast(artwork_of_date_acquired, artwork)
-    
+        value = newMediumStructure()
+        mp.put(catalog['mediumsByArtist'], id_, value)
+    fillMediumStructure(value, id_, artwork)
+
+
+def newMediumStructure():
+    structure = {'total':0,
+                 'size': 0,
+                 'most_used': None,
+                 'times_used': 0,
+                 'artworks': lt.newList('ARRAY_LIST', key='Date')}
+    return structure
+
+
+def fillMediumStructure(structure, id_, artwork):
+    lt.addLast(structure['artworks'], artwork)
+
+
 # LAB 5
 
-def addMedium(catalog, mediumkey, artwork):
+
+def addMedium(catalog,  id_, artwork):
     """
     Esta función adiciona un medio o técnica al map de medios.
     Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
     """
+    mediumkey = artwork['Medium']
     existmedium = mp.contains(catalog['mediums'], mediumkey)
     if existmedium:
         entry = mp.get(catalog['mediums'], mediumkey)
@@ -216,7 +219,7 @@ def addMedium(catalog, mediumkey, artwork):
 
 def newMedium(medium):
     """
-    Crea una nueva estructura para modelar los medios o técnicas de una obra. 
+    Crea una nueva estructura para modelar los medios o técnicas. 
     Se crea una lista para las obras de dicho medio.
     """
     mediums = {'medium': '',
@@ -226,7 +229,7 @@ def newMedium(medium):
     mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return mediums
 
-# Requirement 4
+# LAB 6
 
 
 def addNationality(catalog, id_, artwork):
@@ -270,10 +273,6 @@ def newNationality(nationality):
     nationality_value['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return nationality_value
 
-# TODO: Busqueda de las llaves top 5 mejores paises para imprimir (guardar keys en lista)
-def requirement3(catalog):
-    paises=[]
-    return paises
 
 def compareArtworksByDate(artwork1, artwork2):
     """
