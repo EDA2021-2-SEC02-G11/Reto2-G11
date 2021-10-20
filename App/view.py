@@ -84,8 +84,6 @@ def printloadData():
                         'Adquisición': 40, 'Dimensiones': 40}
     print(answ1)
     print("La función de cargar datos demoró "+str(elapsed_time_mseg)+' ms.')
-
-    print(catalog['mediumsByArtist'] )
     return catalog
 
 
@@ -114,7 +112,7 @@ def printReq1():
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoró: "+str(elapsed_time_mseg))
-    print(catalog['nationalities'])
+
 
 def printReq2():
     fecha1 = input("Ingrese una fecha inicial en formato AAAA-MM-DD: ")

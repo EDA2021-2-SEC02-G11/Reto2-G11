@@ -154,20 +154,26 @@ def requirement1(catalog, initial_year, final_year):
     while year_f >= initial_year and lt.size(muestra) < 6:
         year_f -= 1
         entry = mp.get(catalog['artistsByBeginDate'], year_f)
-        artists_by_year = me.getValue(entry)
-        count += lt.size(artists_by_year)
-        i = lt.size(artists_by_year)
-        while i > 0:            
-            artist = lt.getElement(artists_by_year, i)
-            lt.addLast(muestra, artist)
-            if lt.size(muestra) >= 6:
-                break
-            i -= 1
+        if entry:
+            artists_by_year = me.getValue(entry)
+            count += lt.size(artists_by_year)
+            i = lt.size(artists_by_year)
+            while i > 0:            
+                artist = lt.getElement(artists_by_year, i)
+                lt.addLast(muestra, artist)
+                if lt.size(muestra) >= 6:
+                    break
+                i -= 1
     for year in range(year_0+1, year_f):
         entry = mp.get(catalog['artistsByBeginDate'], year)
-        artists_by_year = me.getValue(entry)
-        count += lt.size(artists_by_year)
+        if entry:
+            artists_by_year = me.getValue(entry)
+            count += lt.size(artists_by_year)
     return count, muestra
+
+
+# Requirement 2
+
 
 
 #Requirement 3
