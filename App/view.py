@@ -114,7 +114,7 @@ def printReq1():
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
     print("Se demoró: "+str(elapsed_time_mseg))
-
+    print(catalog['nationalities'])
 
 def printReq2():
     fecha1 = input("Ingrese una fecha inicial en formato AAAA-MM-DD: ")
@@ -154,8 +154,12 @@ def printReq3():
 
 
 def printReq4(catalog):
-    print("Este requerimiento aún no se ha implementado.")
-
+    nationality=controller.requirement4(catalog)
+    print("======================== Req No. 4 Inputs ========================")
+    print("Ranking de paises por el numero de obras en el MoMA")
+    print("======================== Req No. 4 Respuesta =====================")
+    print("El top 10 de paises en el MoMA son:")
+    print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
 
 def printReq5():
     print("Este requerimiento aún no se ha implementado.")
