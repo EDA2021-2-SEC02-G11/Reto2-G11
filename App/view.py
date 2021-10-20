@@ -84,6 +84,8 @@ def printloadData():
                         'Adquisición': 40, 'Dimensiones': 40}
     print(answ1)
     print("La función de cargar datos demoró "+str(elapsed_time_mseg)+' ms.')
+
+    print(catalog['mediumsByArtist'] )
     return catalog
 
 
