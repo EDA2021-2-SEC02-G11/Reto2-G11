@@ -129,7 +129,8 @@ def printReq2():
                         'Dimensiones'])
     for i in [1,2,3,0,-1,-2]:        
         answ.add_row([lt.getElement(muestra, i)['Title'],
-                      controller.getArtistFromID(catalog, lt.getElement(muestra, i)['ConstituentID']),
+                      controller.getArtistFromID(catalog,
+                      lt.getElement(muestra, i)['ConstituentID']),
                       lt.getElement(muestra, i)['Date'],
                       lt.getElement(muestra, i)['DateAcquired'],
                       lt.getElement(muestra, i)['Medium'],
@@ -155,8 +156,42 @@ def printReq4(catalog):
     print("El top 10 de paises en el MoMA son:")
     print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
     print(mayor)
+
+
 def printReq5():
-    print("Este requerimiento aún no se ha implementado.")
+    department = input("Ingrese el nombre del departamento: ")
+    start_time = time.process_time()
+    artworks, precios_obras, precio, peso = controller.requirement5(catalog, department)
+    print("======================= Req No. 5 Inputs =========================")
+    print('Estime el costo de transportar todas las obras del departamento '+
+          department+' del MoMA.')
+    print("====================== Req No. 5 Respuesta =======================")
+    print('El MoMA transportará '+str(lt.size(artworks)).strip()+
+          ' obras del departamento '+department+'.')
+    print('El precio estimado del servicio es: $'+str(precio).strip() +
+          ' USD.')
+    print('El peso estimado de todas las obras es de: '+str(peso)+' kg.')
+    print("Las cinco obras más costosas que se van a transportar son: ")
+    print("Las cinco obras más antiguas que se van a transportar son: ")
+    answ = PrettyTable(['Título', 'Artista(s)', 'Clasificacion', 'Fecha',
+                        'Medio', 'Dimensiones', 'Costo'])
+    result=artworks
+    for i in [1,2,3,4,5]:
+        answ.add_row([lt.getElement(result, i)['Title'],
+                      controller.getArtistFromID(catalog,
+                      lt.getElement(result, i)['ConstituentID']),
+                      lt.getElement(result, i)['Classification'],
+                      lt.getElement(result, i)['Date'],
+                      lt.getElement(result, i)['Medium'],
+                      lt.getElement(result, i)['Dimensions'],
+                      lt.getElement(precios_obras, i)])
+    answ._max_width = {'Título': 20, 'Artista(s)': 20, 'Fecha': 15,
+                       'Adquisición': 15, 'Medio': 20, 'Dimensiones': 20,
+                       'Costo': 15}
+    print(answ)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print("Se demoró: "+str(elapsed_time_mseg))
 
 
 def printReq6():

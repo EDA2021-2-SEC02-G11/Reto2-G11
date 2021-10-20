@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.mapstructure import contains
 import config as cf
 import time
 from DISClib.ADT import list as lt
@@ -84,6 +85,13 @@ def newCatalog():
                                          loadfactor=0.2,
                                          comparefunction=compareKeys)
 
+    # Requirement 5
+
+    catalog['departments'] = mp.newMap(8,  # N. departments in 'large'
+                                       maptype='PROBING',
+                                       loadfactor=0.2,
+                                       comparefunction=compareKeys)
+
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
     catalog['mediums'] = mp.newMap(21251,  # N. 'Medium'
@@ -121,6 +129,7 @@ def addArtwork(catalog, artwork):
         id_ = int(id_.strip())
         addNationality(catalog, id_, artwork)
         addArtistMedium(catalog, id_, artwork)
+    addDepartment(catalog, artwork)
     addMedium(catalog,  id_, artwork)
     addArtworksByDateAcquired(catalog, artwork)
 
@@ -149,7 +158,7 @@ def getArtistFromID(catalog, ids):
     string = ''
     for artist in artists:
         string += artist+', '
-    return string[:-1]
+    return string[:-2]
 
 # Requirement 1
 
@@ -453,6 +462,80 @@ def newMedium(medium):
     mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return mediums
 
+
+# Requirement 5
+
+def addDepartment(catalog, artwork):
+    department = artwork['Department']
+    department_exists = mp.contains(catalog['departments'], department)
+    if department_exists:
+        entry = mp.get(catalog['departments'], department)
+        artworks_by_department = me.getValue(entry)
+    else:
+        artworks_by_department = newArtworksByDepartment()
+        mp.put(catalog['departments'], department, artworks_by_department)
+    lt.addLast(artworks_by_department, artwork)
+
+
+def newArtworksByDepartment():
+    artworks_department = lt.newList('ARRAY_LIST', key = 'Date')
+    return artworks_department
+
+
+def requirement5(catalog, department):
+    prices = lt.newList('ARRAY_LIST')
+    entry = mp.get(catalog['departments'], department)
+    artworks_by_department = me.getValue(entry)
+    artworks = sortAntiguedad(artworks_by_department)
+    total_cost = 0
+    peso = 0
+    for artwork in lt.iterator(artworks):
+        cost, weight = calculateCost(artwork)
+        total_cost += cost
+        peso += weight
+        lt.addLast(prices, cost)
+    peso = 0.
+    return artworks, prices, total_cost, peso
+
+
+def convertMeters(medida):
+    try:
+        medida_metros = float(medida)
+        medida_metros = medida_metros/100.
+    except:
+        medida_metros = False
+    if medida_metros == 0:
+        medida_metros = False
+    return medida_metros
+
+
+def calculateCost(artwork):
+    depth = convertMeters(artwork['Depth (cm)'])
+    height = convertMeters(artwork['Height (cm)'])
+    lenght = convertMeters(artwork['Length (cm)'])
+    width = convertMeters(artwork['Width (cm)'])
+    cirfunference = convertMeters(artwork['Circumference (cm)'])
+    diameter = convertMeters(artwork['Diameter (cm)'])
+    medidas_lineales = 1
+    price1 = 0.
+    price2 = 0.
+    for medida in [depth, height, lenght, width, cirfunference]:
+        if type(medida) is float:
+            medidas_lineales *= medida
+            price1 = medidas_lineales*72.
+    if type(diameter) is float:
+        area = 3.141593 * (diameter/2)**2
+        price2 = area*72.
+    try:
+        peso = float(artwork['Weight (kg)'])
+        price3 = peso*72.
+    except:
+        price3 = 0.
+        peso = 0.
+    price = max([price1, price2, price3])
+    if price == 0.:
+        price = 48
+    return price, peso
 
 
 # Funciones de comparación genéricas
