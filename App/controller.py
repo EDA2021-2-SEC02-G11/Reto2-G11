@@ -77,6 +77,10 @@ def requirement1(catalog, initial_year, final_year):
     return model.requirement1(catalog, initial_year, final_year)
 
 
+def getArtistFromID(catalog, id_):
+    return model.getArtistFromID(catalog, id_)
+
+
 def requirement2(catalog, fecha1, fecha2):
     return model.requirement2(catalog, fecha1, fecha2)
 

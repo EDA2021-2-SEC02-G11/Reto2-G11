@@ -45,25 +45,29 @@ def newCatalog():
     catalog = {}
 
     catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')
-    catalog['artworks'] = lt.newList('ARRAY_LIST', key='ConstituentID')
+    catalog['artworks'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # 138150
+    catalog['IDartists'] = mp.newMap(15223,  # N. ContituentID
+                                     maptype='PROBING',
+                                     loadfactor=0.2,
+                                     comparefunction=compareKeys)
 
     # Requirement 1
 
-    catalog['artistsByBeginDate'] = mp.newMap(21251,  # TODO: N. 'BeginDate' la
+    catalog['artistsByBeginDate'] = mp.newMap(236,  # N. 'BeginDate'
                                               maptype='PROBING',
                                               loadfactor=0.2,
                                               comparefunction=compareKeys)
 
     # Requirement 2
 
-    catalog['ArtworksByDateAcquired'] = mp.newMap(138150,
+    catalog['ArtworksByDateAcquired'] = mp.newMap(93,  # N. year 'DateAcquired'
                                                   maptype='PROBING',
                                                   loadfactor=0.2,
                                                   comparefunction=compareKeys)
 
     # Requirement 3
 
-    catalog['mediumsByArtist'] = mp.newMap(21251,  # TODO: N. 'Medium' large
+    catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
                                            maptype='PROBING',
                                            loadfactor=0.2,
                                            comparefunction=compareKeys)
@@ -77,7 +81,7 @@ def newCatalog():
 
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
-    catalog['mediums'] = mp.newMap(21251,  # Number of mediums in 'large' file.
+    catalog['mediums'] = mp.newMap(21251,  # N. 'Medium'
                                    maptype='PROBING',
                                    loadfactor=0.2,
                                    comparefunction=compareKeys)
@@ -96,6 +100,7 @@ def newCatalog():
 
 def addArtist(catalog, artist):
     addArtistByBeginDate(catalog, artist)
+    addIDArtist(catalog, artist)
     lt.addLast(catalog['artists'], artist)
 
 
@@ -113,6 +118,33 @@ def addArtwork(catalog, artwork):
         addArtistMedium(catalog, id_, artwork)
     addMedium(catalog,  id_, artwork)
     addArtworksByDateAcquired(catalog, artwork)
+
+# ID Artist
+
+def addIDArtist(catalog, artist):
+    try:
+        id_= int(artist['ConstituentID'])
+    except:
+        id = 0
+    id_exists = mp.contains(catalog['IDartists'], id_)
+    if id_exists:
+        entry = mp.get(catalog['IDartists'], id_)
+    else:
+        mp.put(catalog['IDartists'], id_, artist)
+
+
+def getArtistFromID(catalog, ids):
+    artists = []
+    ids = ids[1:-1].split(",")
+    for id_ in ids:
+        id_ = int(id_.strip())
+        entry = mp.get(catalog['IDartists'], id_)
+        artist_dict = me.getValue(entry)
+        artists.append(artist_dict['DisplayName'])
+    string = ''
+    for artist in artists:
+        string += artist+', '
+    return string[:-1]
 
 # Requirement 1
 
@@ -199,7 +231,6 @@ def addArtworksByDateAcquired(catalog, artwork):
         artworks_per_year = newArtworkPerYear()
         mp.put(catalog['ArtworksByDateAcquired'], year, artworks_per_year)
     lt.addLast(artworks_per_year, artwork)
-    #lt.addLast(artworks_per_year['artworks'], artwork)
 
 
 def newArtworkPerYear():
@@ -207,16 +238,7 @@ def newArtworkPerYear():
     return artworks_per_year
 
 
-# def newArtworkPerYear(artwork, year):
-#     artworks_per_year = {'year': '',
-#                          'artworks': None,
-#                          'size': 0}
-#     artworks_per_year['year'] = year
-#     artworks_per_year['artworks'] = lt.newList('ARRAY_LIST', compareArtworks_DateAcquired)
-#     return artworks_per_year
-
-
-def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
+def compareArtworks_DateAcquired(artwork1:dict, artwork2:dict)->int:
     """
     Compara dos obras de arte por la fecha en la que fueron adquiridas, 
     'DateAcquired'.
@@ -237,12 +259,12 @@ def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
         0 si artwork1 fue adquirido más recientemente que artwork2.
         -1 si artwork2 fue adquirido más recientemente que artwork1.
     """
-    if artwork1["DateAcquired"]=="" or artwork2["DateAcquired"]=="":
-        if artwork1["DateAcquired"]=="":
+    if artwork1["DateAcquired"] == "" or artwork2["DateAcquired"] == "":
+        if artwork1["DateAcquired"] == "":
             return -1
         else:
             return 0
-    elif datetime.strptime(artwork1["DateAcquired"], '%Y-%m-%d').date()<datetime.strptime(artwork2["DateAcquired"], '%Y-%m-%d').date():
+    elif datetime.strptime(artwork1["DateAcquired"], '%Y-%m-%d').date() < datetime.strptime(artwork2["DateAcquired"], '%Y-%m-%d').date():
         return -1
     return 0
 

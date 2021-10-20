@@ -129,7 +129,7 @@ def printReq2():
                         'Dimensiones'])
     for i in [1,2,3,0,-1,-2]:        
         answ.add_row([lt.getElement(muestra, i)['Title'],
-                      lt.getElement(muestra, i)['ConstituentID'], # TODO: Artista
+                      controller.getArtistFromID(catalog, lt.getElement(muestra, i)['ConstituentID']),
                       lt.getElement(muestra, i)['Date'],
                       lt.getElement(muestra, i)['DateAcquired'],
                       lt.getElement(muestra, i)['Medium'],
