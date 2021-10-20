@@ -79,6 +79,11 @@ def newCatalog():
                                          loadfactor=0.2,
                                          comparefunction=compareKeys)
 
+    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
+                                         maptype='PROBING',
+                                         loadfactor=0.2,
+                                         comparefunction=compareKeys)
+
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
     catalog['mediums'] = mp.newMap(21251,  # N. 'Medium'
@@ -341,41 +346,7 @@ def newMediumStructure():
 def fillMediumStructure(structure, id_, artwork):
     lt.addLast(structure['artworks'], artwork)
 
-
-# LAB 5
-
-
-def addMedium(catalog,  id_, artwork):
-    """
-    Esta función adiciona un medio o técnica al map de medios.
-    Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
-    """
-    mediumkey = artwork['Medium']
-    existmedium = mp.contains(catalog['mediums'], mediumkey)
-    if existmedium:
-        entry = mp.get(catalog['mediums'], mediumkey)
-        mediumvalue = me.getValue(entry)
-    else:
-        mediumvalue = newMedium(mediumkey)
-        mp.put(catalog['mediums'], mediumkey, mediumvalue)
-    lt.addLast(mediumvalue['artworks'], artwork)
-    mediumvalue['size'] += 1
-
-
-def newMedium(medium):
-    """
-    Crea una nueva estructura para modelar los medios o técnicas. 
-    Se crea una lista para las obras de dicho medio.
-    """
-    mediums = {'medium': '',
-               'artworks': None,
-               'size': 0}
-    mediums['medium'] = medium
-    mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
-    return mediums
-
-# LAB 6
-
+# Requirement 4
 
 def addNationality(catalog, id_, artwork):
     """
@@ -391,6 +362,15 @@ def addNationality(catalog, id_, artwork):
         mp.put(catalog['nationalities'], nationality_key, nationality_value)
     lt.addLast(nationality_value['artworks'], artwork)
     nationality_value['size'] += 1
+    #if nationality_value['top1n']<lt.size(nationality_value):
+    #    nationality_value['top1n'] =lt.size(nationality_value)
+    #    nationality_value['top1']=nationality_key
+    #elif nationality_value['top2n']<lt.size(nationality_value):
+    #    nationality_value['top2n'] =lt.size(nationality_value)
+    #    nationality_value['top2']=nationality_key
+    #elif nationality_value['top3n']<lt.size(nationality_value):
+    #    nationality_value['top3n'] =lt.size(nationality_value)
+    #    nationality_value['top3']=nationality_key
 
 
 def id_nation(catalog, ids):
@@ -430,6 +410,39 @@ def compareArtworksByDate(artwork1, artwork2):
     elif artwork1["Date"] <= artwork2["Date"]:
         return -1
     return 0
+
+# LAB 5
+
+
+def addMedium(catalog,  id_, artwork):
+    """
+    Esta función adiciona un medio o técnica al map de medios.
+    Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
+    """
+    mediumkey = artwork['Medium']
+    existmedium = mp.contains(catalog['mediums'], mediumkey)
+    if existmedium:
+        entry = mp.get(catalog['mediums'], mediumkey)
+        mediumvalue = me.getValue(entry)
+    else:
+        mediumvalue = newMedium(mediumkey)
+        mp.put(catalog['mediums'], mediumkey, mediumvalue)
+    lt.addLast(mediumvalue['artworks'], artwork)
+    mediumvalue['size'] += 1
+
+
+def newMedium(medium):
+    """
+    Crea una nueva estructura para modelar los medios o técnicas. 
+    Se crea una lista para las obras de dicho medio.
+    """
+    mediums = {'medium': '',
+               'artworks': None,
+               'size': 0}
+    mediums['medium'] = medium
+    mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
+    return mediums
+
 
 
 # Funciones de comparación genéricas
