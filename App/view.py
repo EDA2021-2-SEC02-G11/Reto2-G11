@@ -148,13 +148,13 @@ def printReq3():
 
 
 def printReq4(catalog):
+    mayor = controller.requirement4(catalog)
     print("======================== Req No. 4 Inputs ========================")
     print("Ranking de paises por el numero de obras en el MoMA")
     print("======================== Req No. 4 Respuesta =====================")
     print("El top 10 de paises en el MoMA son:")
     print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
-    print(catalog['nationalities']["top1"])
-
+    print(mayor)
 def printReq5():
     print("Este requerimiento aún no se ha implementado.")
 

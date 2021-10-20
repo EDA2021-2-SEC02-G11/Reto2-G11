@@ -88,6 +88,8 @@ def requirement2(catalog, fecha1, fecha2):
 def requirement3(catalog, artist):
     return model.requirement3(catalog, artist)
 
+def requirement4(catalog):
+    return model.requirement4(catalog)
 
 # Funciones de ordenamiento
 

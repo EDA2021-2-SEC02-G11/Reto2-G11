@@ -352,6 +352,8 @@ def addNationality(catalog, id_, artwork):
     """
     Adds a new nationality to nationalities map.
     """
+    mayor=0
+    nation=''
     nationality_key = id_nation(catalog, id_)
     nationality_exists = mp.contains(catalog['nationalities'], nationality_key)
     if nationality_exists:
@@ -362,15 +364,23 @@ def addNationality(catalog, id_, artwork):
         mp.put(catalog['nationalities'], nationality_key, nationality_value)
     lt.addLast(nationality_value['artworks'], artwork)
     nationality_value['size'] += 1
-    #if nationality_value['top1n']<lt.size(nationality_value):
-    #    nationality_value['top1n'] =lt.size(nationality_value)
-    #    nationality_value['top1']=nationality_key
-    #elif nationality_value['top2n']<lt.size(nationality_value):
-    #    nationality_value['top2n'] =lt.size(nationality_value)
-    #    nationality_value['top2']=nationality_key
-    #elif nationality_value['top3n']<lt.size(nationality_value):
-    #    nationality_value['top3n'] =lt.size(nationality_value)
-    #    nationality_value['top3']=nationality_key
+    if mayor<nationality_value['size']:
+        mayor=nationality_value['size']
+        nation=nationality_key
+    
+
+def requirement4(catalog):
+    mayor=0
+    nation=''
+    lista=mp.keySet(catalog['nationalities'])
+    print(lista)
+    for i in lista:
+        entry = mp.get(catalog['ArtworksByDateAcquired'], i)
+        print(entry)
+        if mayor<entry:
+            mayor=entry
+            nation=i
+    return nation
 
 
 def id_nation(catalog, ids):
