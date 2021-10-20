@@ -118,31 +118,28 @@ def printReq2():
     fecha1 = input("Ingrese una fecha inicial en formato AAAA-MM-DD: ")
     fecha2 = input("Ingrese una fecha final en formato AAAA-MM-DD: ")
     start_time = time.process_time()
-    result = controller.rangoArtworks(catalog, fecha1, fecha2)
-    num_artists = 5  # TODO: FALTA Toca asociar con los artistas para esto
-    num_purchased = 5  # TODO: Falta
-    print("======================== Req No. 1 Inputs ========================")
+    count, muestra = controller.requirement2(catalog, fecha1, fecha2)
+    print("======================== Req No. 2 Inputs ========================")
     print("Obras adquiridas entre "+fecha1+" y "+fecha2)
-    print("======================== Req No. 1 Respuesta =====================")
-    print("El MoMA adquirió "+str(lt.size(result))+" obras entre ",fecha1,
-          " y ",fecha2," con ",str(num_artists),
-          " artistas, de las cuales compró ",str(num_purchased))
+    print("======================== Req No. 2 Respuesta =====================")
+    print("El MoMA adquirió "+str(count)+" obras entre "+fecha1+'y'+fecha2+".")
+          # de las cuales compró ",str(num_purchased))
     print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
     answ = PrettyTable(['Título','Artista(s)','Fecha','Adquisición','Medio',
                         'Dimensiones'])
-    for i in [1,2,3,-2,-1,0]:        
-        answ.add_row([lt.getElement(result,i)['Title'],
-                      lt.getElement(result,i)['ConstituentID'], # TODO: Artista
-                      lt.getElement(result,i)['Date'],
-                      lt.getElement(result,i)['DateAcquired'],
-                      lt.getElement(result,i)['Medium'],
-                      lt.getElement(result,i)['Dimensions']])
+    for i in [1,2,3,0,-1,-2]:        
+        answ.add_row([lt.getElement(muestra, i)['Title'],
+                      lt.getElement(muestra, i)['ConstituentID'], # TODO: Artista
+                      lt.getElement(muestra, i)['Date'],
+                      lt.getElement(muestra, i)['DateAcquired'],
+                      lt.getElement(muestra, i)['Medium'],
+                      lt.getElement(muestra, i)['Dimensions']])
     answ._max_width = {'Título':40,'Artista(s)':20,'Fecha':15,'Adquisición':15,
                        'Medio':20,'Dimensiones':40}
     print(answ)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
-    print("Se demoro: ",str(elapsed_time_mseg))
+    print("Se demoró: ",str(elapsed_time_mseg))
 
 
 def printReq3():

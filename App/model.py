@@ -54,6 +54,13 @@ def newCatalog():
                                               loadfactor=0.2,
                                               comparefunction=compareKeys)
 
+    # Requirement 2
+
+    catalog['ArtworksByDateAcquired'] = mp.newMap(138150,
+                                                  maptype='PROBING',
+                                                  loadfactor=0.2,
+                                                  comparefunction=compareKeys)
+
     # Requirement 3
 
     catalog['mediumsByArtist'] = mp.newMap(21251,  # TODO: N. 'Medium' large
@@ -105,6 +112,7 @@ def addArtwork(catalog, artwork):
         addNationality(catalog, id_, artwork)
         addArtistMedium(catalog, id_, artwork)
     addMedium(catalog,  id_, artwork)
+    addArtworksByDateAcquired(catalog, artwork)
 
 # Requirement 1
 
@@ -119,13 +127,13 @@ def addArtistByBeginDate(catalog, artist):
         entry = mp.get(catalog['artistsByBeginDate'], begin_date)
         artists_of_begin_date = me.getValue(entry)
     else:
-        artists_of_begin_date = newBeginDateArray(artist)
+        artists_of_begin_date = newBeginDateArray()
         mp.put(catalog['artistsByBeginDate'], begin_date,
                artists_of_begin_date)
     lt.addLast(artists_of_begin_date, artist)
 
 
-def newBeginDateArray(artist):
+def newBeginDateArray():
     """
     Creates new array for artists born in the same year
     """
@@ -158,7 +166,7 @@ def requirement1(catalog, initial_year, final_year):
             artists_by_year = me.getValue(entry)
             count += lt.size(artists_by_year)
             i = lt.size(artists_by_year)
-            while i > 0:            
+            while i > 0:
                 artist = lt.getElement(artists_by_year, i)
                 lt.addLast(muestra, artist)
                 if lt.size(muestra) >= 6:
@@ -174,6 +182,115 @@ def requirement1(catalog, initial_year, final_year):
 
 # Requirement 2
 
+def addArtworksByDateAcquired(catalog, artwork):
+    """
+    Adds a new artwork to ArtworksByDateAcquired map.
+    """
+    try:
+        year = artwork['DateAcquired'][:4]
+        year = int(year)
+    except:
+        year = 0
+    year_exists = mp.contains(catalog['ArtworksByDateAcquired'], year)
+    if year_exists:
+        entry = mp.get(catalog['ArtworksByDateAcquired'], year)
+        artworks_per_year = me.getValue(entry)
+    else:
+        artworks_per_year = newArtworkPerYear()
+        mp.put(catalog['ArtworksByDateAcquired'], year, artworks_per_year)
+    lt.addLast(artworks_per_year, artwork)
+    #lt.addLast(artworks_per_year['artworks'], artwork)
+
+
+def newArtworkPerYear():
+    artworks_per_year = lt.newList('ARRAY_LIST', compareArtworks_DateAcquired)
+    return artworks_per_year
+
+
+# def newArtworkPerYear(artwork, year):
+#     artworks_per_year = {'year': '',
+#                          'artworks': None,
+#                          'size': 0}
+#     artworks_per_year['year'] = year
+#     artworks_per_year['artworks'] = lt.newList('ARRAY_LIST', compareArtworks_DateAcquired)
+#     return artworks_per_year
+
+
+def compareArtworks_DateAcquired(artwork1:dict , artwork2:dict)->int:
+    """
+    Compara dos obras de arte por la fecha en la que fueron adquiridas, 
+    'DateAcquired'.
+    
+    Si el 'DateAcquired' de una obra de arte es vacío, la obra se toma como 
+    la más antigua.
+
+    Parámetros
+    ----------
+    artwork1 : dict
+        Informacion de la primera obra que incluye su valor 'DateAcquired'.
+    artwork2 : dict
+        Informacion de la segunda obra que incluye su valor 'DateAcquired'.
+
+    Retorno
+    -------
+    int
+        0 si artwork1 fue adquirido más recientemente que artwork2.
+        -1 si artwork2 fue adquirido más recientemente que artwork1.
+    """
+    if artwork1["DateAcquired"]=="" or artwork2["DateAcquired"]=="":
+        if artwork1["DateAcquired"]=="":
+            return -1
+        else:
+            return 0
+    elif datetime.strptime(artwork1["DateAcquired"], '%Y-%m-%d').date()<datetime.strptime(artwork2["DateAcquired"], '%Y-%m-%d').date():
+        return -1
+    return 0
+
+
+def requirement2(catalog, fecha1, fecha2):
+    count = 0
+    count_purchase = 0
+    muestra = lt.newList('ARRAY_LIST', key='BeginDate')
+    year1 = int(fecha1[:4])
+    year2 = int(fecha2[:4])
+    year_0 = year1-1
+    while year_0 <= year2 and lt.size(muestra) < 3:
+        year_0 += 1
+        entry = mp.get(catalog['ArtworksByDateAcquired'], year_0)
+        if entry:
+            artworks_per_year1 = me.getValue(entry)
+            sorted_artworks_per_year1 = sortDate(artworks_per_year1)
+            count += lt.size(sorted_artworks_per_year1)
+            i = 1
+            while i <= lt.size(sorted_artworks_per_year1):
+                artwork = lt.getElement(sorted_artworks_per_year1, i)
+                if datetime.strptime(artwork["DateAcquired"], '%Y-%m-%d').date() >= datetime.strptime(fecha1, '%Y-%m-%d').date():
+                    lt.addLast(muestra, artwork)
+                    if lt.size(muestra) >= 3:
+                        break
+                i += 1
+    year_f = year2+1
+    while year_f >= year_0 and lt.size(muestra) < 6:
+        year_f -= 1
+        entry = mp.get(catalog['ArtworksByDateAcquired'], year_f)
+        if entry:
+            artworks_per_year2 = me.getValue(entry)
+            sorted_artworks_per_year2 = sortDate(artworks_per_year2)
+            count += lt.size(sorted_artworks_per_year2)
+            i = lt.size(sorted_artworks_per_year2)
+            while i > 0:
+                artwork = lt.getElement(sorted_artworks_per_year2, i)
+                if datetime.strptime(artwork["DateAcquired"], '%Y-%m-%d').date() <= datetime.strptime(fecha2, '%Y-%m-%d').date():
+                    lt.addLast(muestra, artwork)
+                    if lt.size(muestra) >= 6:
+                        break
+                i -= 1
+    for year in range(year_0+1, year_f):
+        entry = mp.get(catalog['ArtworksByDateAcquired'], year)
+        if entry:
+            artworks_by_year = me.getValue(entry)
+            count += lt.size(artworks_by_year)
+    return count, muestra
 
 
 #Requirement 3
@@ -313,6 +430,9 @@ def compareKeys(key, entry):
 
 # Funciones de ordenamiento
 
+def sortDate(lista):
+    sorted_list = mer.sort(lista, compareArtworks_DateAcquired)
+    return sorted_list
 
 def sortAntiguedad(lista):
     sorted_list = mer.sort(lista, compareArtworksByDate)
