@@ -190,7 +190,7 @@ def printReq4(catalog):
 def printReq5():
     department = input("Ingrese el nombre del departamento: ")
     start_time = time.process_time()
-    artworks, precios_obras, precio, peso = controller.requirement5(catalog, department)
+    artworks, precios_obras, precio, peso, top5, top5_cost = controller.requirement5(catalog, department)
     print("======================= Req No. 5 Inputs =========================")
     print('Estime el costo de transportar todas las obras del departamento '+
           department+' del MoMA.')
@@ -201,11 +201,26 @@ def printReq5():
           ' USD.')
     print('El peso estimado de todas las obras es de: '+str(peso)+' kg.')
     print("Las cinco obras más costosas que se van a transportar son: ")
-    print("Las cinco obras más antiguas que se van a transportar son: ")
+    answ1 = PrettyTable(['Título', 'Artista(s)', 'Clasificacion', 'Fecha',
+                        'Medio', 'Dimensiones', 'Costo'])
+    for i in [1, 2, 3, 4, 5]:
+        answ1.add_row([lt.getElement(top5, i)['Title'],
+                      controller.getArtistFromID(catalog,
+                      lt.getElement(top5, i)['ConstituentID']),
+                      lt.getElement(top5, i)['Classification'],
+                      lt.getElement(top5, i)['Date'],
+                      lt.getElement(top5, i)['Medium'],
+                      lt.getElement(top5, i)['Dimensions'],
+                      lt.getElement(top5_cost, i)])
+    answ1._max_width = {'Título': 20, 'Artista(s)': 20, 'Fecha': 15,
+                       'Adquisición': 15, 'Medio': 20, 'Dimensiones': 20,
+                       'Costo': 15}
+    print(answ1)
+    print("\nLas cinco obras más antiguas que se van a transportar son: ")
     answ = PrettyTable(['Título', 'Artista(s)', 'Clasificacion', 'Fecha',
                         'Medio', 'Dimensiones', 'Costo'])
-    result=artworks
-    for i in [1,2,3,4,5]:
+    result = artworks
+    for i in [1, 2, 3, 4, 5]:
         answ.add_row([lt.getElement(result, i)['Title'],
                       controller.getArtistFromID(catalog,
                       lt.getElement(result, i)['ConstituentID']),

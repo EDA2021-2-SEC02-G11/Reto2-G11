@@ -25,7 +25,6 @@
  """
 
 
-from DISClib.DataStructures.mapstructure import contains
 import config as cf
 import time
 from DISClib.ADT import list as lt
@@ -57,16 +56,16 @@ def newCatalog():
     ## Requirement 1
 
     catalog['artistsByBeginDate'] = mp.newMap(236,  # N. 'BeginDate'
-                                             maptype='PROBING',
-                                             loadfactor=0.2,
-                                             comparefunction=compareKeys)
+                                              maptype='PROBING',
+                                              loadfactor=0.2,
+                                              comparefunction=compareKeys)
 
     ## Requirement 2
 
     catalog['ArtworksByDateAcquired'] = mp.newMap(93,  # N. year 'DateAcquired'
-                                                 maptype='PROBING',
-                                                 loadfactor=0.2,
-                                                 comparefunction=compareKeys)
+                                                  maptype='PROBING',
+                                                  loadfactor=0.2,
+                                                  comparefunction=compareKeys)
 
     ## Requirement 3
 
@@ -126,9 +125,9 @@ def addArtwork(catalog, artwork):
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
-        addArtistMedium(catalog, id_, artwork)  # Requirement 3
+        # addArtistMedium(catalog, id_, artwork)  # Requirement 3
         # addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
-    # addDepartment(catalog, artwork)  # Requirement 5
+    addDepartment(catalog, artwork)  # Requirement 5
     # addMedium(catalog,  id_, artwork)  # Lab 5
 
 
@@ -527,22 +526,6 @@ def newArtworksByDepartment():
     return artworks_department
 
 
-def requirement5(catalog, department):
-    prices = lt.newList('ARRAY_LIST')
-    entry = mp.get(catalog['departments'], department)
-    artworks_by_department = me.getValue(entry)
-    artworks = sortAntiguedad(artworks_by_department)
-    total_cost = 0
-    peso = 0
-    for artwork in lt.iterator(artworks):
-        cost, weight = calculateCost(artwork)
-        total_cost += cost
-        peso += weight
-        lt.addLast(prices, cost)
-    peso = 0.
-    return artworks, prices, total_cost, peso
-
-
 def convertMeters(medida):
     try:
         medida_metros = float(medida)
@@ -581,6 +564,40 @@ def calculateCost(artwork):
     if price == 0.:
         price = 48
     return price, peso
+
+
+def requirement5(catalog, department):
+    prices = lt.newList('ARRAY_LIST')
+    top5 = lt.newList('ARRAY_LIST')
+    top5_cost = lt.newList('ARRAY_LIST')
+    entry = mp.get(catalog['departments'], department)
+    artworks_by_department = me.getValue(entry)
+    artworks = sortAntiguedad(artworks_by_department)
+    total_cost = 0
+    peso = 0
+    costs = [0]
+    acosts = []
+    for artwork in lt.iterator(artworks):
+        cost, weight = calculateCost(artwork)
+        total_cost += cost
+        peso += weight
+        lt.addLast(prices, cost)
+        if cost > min(costs):
+            if min(costs) == 0:
+                costs.remove(min(costs))
+            costs.append(cost)
+            acosts.append(artwork)
+            if len(costs) > 6:
+                position = costs.index(min(costs))
+                costs.remove(min(costs))
+                del(acosts[position])      
+    for i in costs:
+        lt.addLast(top5_cost, i)
+    for j in acosts:
+        lt.addLast(top5, j)
+    peso = 0.
+    return artworks, prices, total_cost, peso, top5, top5_cost
+
 
 
 # Función de comparación genérica
