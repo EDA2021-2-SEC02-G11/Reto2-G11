@@ -70,7 +70,7 @@ def newCatalog():
 
     ## Requirement 3
 
-    catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
+    catalog['mediumsByArtist'] = mp.newMap(138150,  # N. 'Medium'
                                            maptype='PROBING',
                                            loadfactor=0.2,
                                            comparefunction=compareKeys)
@@ -127,9 +127,9 @@ def addArtwork(catalog, artwork):
     for id_ in ids:
         id_ = int(id_.strip())
         # addArtistMedium(catalog, id_, artwork)  # Requirement 3
-        #addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
+        # addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
     addDepartment(catalog, artwork)  # Requirement 5
-    #addMedium(catalog,  id_, artwork)  # Lab 5
+    # addMedium(catalog,  id_, artwork)  # Lab 5
 
 
 # ID Artist
@@ -346,19 +346,21 @@ def addArtistMedium(catalog, id_, artwork):
 
 
 def newMediumStructure():
-    structure = {'number_of_artworks':0,
+    structure = {'number_of_artworks': 0,
                  'number_of_mediums': 0,
                  'most_used': None,
                  'times_used': 0,
                  'mediums': None}
-    return structure
 
-
-def fillMediumStructure(structure, artist, artwork):
     structure['mediums'] = mp.newMap(21251,  # N. 'Medium'
                                      maptype='PROBING',
                                      loadfactor=0.2,
                                      comparefunction=compareKeys)
+    return structure
+
+
+def fillMediumStructure(structure, artist, artwork):
+
     medium = artwork['Medium']
     medium_exists = mp.contains(structure['mediums'], medium)
     if medium_exists:
