@@ -169,8 +169,8 @@ def printReq3():
                       lt.getElement(muestra, i)['DateAcquired'],
                       lt.getElement(muestra, i)['Medium'],
                       lt.getElement(muestra, i)['Dimensions']])
-    answ._max_width = {'Título':20,'Fecha':15,'Adquisición':15,
-                       'Medio':20,'Dimensiones':20}
+    answ._max_width = {'Título': 20, 'Fecha': 15, 'Adquisición': 15,
+                       'Medio': 20, 'Dimensiones': 20}
     print(answ)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
