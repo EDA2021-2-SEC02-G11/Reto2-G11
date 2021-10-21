@@ -70,7 +70,7 @@ def newCatalog():
 
     ## Requirement 3
 
-    catalog['mediumsByArtist'] = mp.newMap(138150,  # N. 'Medium'
+    catalog['mediumsByArtist'] = mp.newMap(100,  # N. 'Medium'
                                            maptype='PROBING',
                                            loadfactor=0.2,
                                            comparefunction=compareKeys)
@@ -126,7 +126,7 @@ def addArtwork(catalog, artwork):
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
-        # addArtistMedium(catalog, id_, artwork)  # Requirement 3
+        addArtistMedium(catalog, id_, artwork)  # Requirement 3
         # addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
     addDepartment(catalog, artwork)  # Requirement 5
     # addMedium(catalog,  id_, artwork)  # Lab 5
@@ -352,7 +352,7 @@ def newMediumStructure():
                  'times_used': 0,
                  'mediums': None}
 
-    structure['mediums'] = mp.newMap(21251,  # N. 'Medium'
+    structure['mediums'] = mp.newMap(100,  # N. 'Medium'
                                      maptype='PROBING',
                                      loadfactor=0.2,
                                      comparefunction=compareKeys)
@@ -360,7 +360,6 @@ def newMediumStructure():
 
 
 def fillMediumStructure(structure, artist, artwork):
-
     medium = artwork['Medium']
     medium_exists = mp.contains(structure['mediums'], medium)
     if medium_exists:
@@ -370,10 +369,10 @@ def fillMediumStructure(structure, artist, artwork):
         artworks_per_medium = newArtworksPerMedium()
         mp.put(structure['mediums'], medium, artworks_per_medium)
         structure['number_of_mediums'] += 1
-        if lt.size(artworks_per_medium) > structure['times_used']:
-            structure['times_used'] = lt.size(artworks_per_medium)
-            structure['most_used'] = medium
     lt.addLast(artworks_per_medium, artwork)
+    if lt.size(artworks_per_medium) > structure['times_used']:
+        structure['most_used'] = medium
+        structure['times_used'] = lt.size(artworks_per_medium)
     structure['number_of_artworks'] += 1
 
 
@@ -384,14 +383,15 @@ def newArtworksPerMedium():
 
 def requirement3(catalog, artist):
     entry = mp.get(catalog['mediumsByArtist'], artist)
-    structure = me.getValue(entry)
-    number_of_artworks = structure['number_of_artworks']
-    number_of_mediums = structure['number_of_mediums']
-    most_used = structure['most_used']
-    times_used = structure['times_used']
-    entry2 = mp.get(structure['mediums'], most_used)
-    artworks_most_used = me.getValue(entry2)
-    muestra = lt.subList(artworks_most_used, 1, 6)
+    if entry:
+        structure = me.getValue(entry)
+        number_of_artworks = structure['number_of_artworks']
+        number_of_mediums = structure['number_of_mediums']
+        most_used = structure['most_used']
+        times_used = structure['times_used']
+        entry2 = mp.get(structure['mediums'], most_used)
+        artworks_most_used = me.getValue(entry2)
+        muestra = artworks_most_used
     return number_of_artworks, number_of_mediums, most_used, times_used, muestra 
 
 
@@ -577,7 +577,7 @@ def calculateCost(artwork):
     return price, peso
 
 
-# Funciones de comparación genéricas
+# Función de comparación genérica
 
 def compareKeys(key, entry):
     """

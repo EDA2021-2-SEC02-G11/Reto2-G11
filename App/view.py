@@ -40,8 +40,7 @@ def printMenu():
     print("Req. No. 1. Listar cronológicamente los artistas.")
     print("Req. No. 2. Listar cronológicamente las adquisiciones.")
     print("Req. No. 3. Clasificar las obras de un artista por técnica.")
-    print("""Req. No. 4. Clasificar las obras por la nacionalidad de sus
-          creadores.""")
+    print("Req. No. 4. Clasificar las obras por la nacionalidad de sus creadores.")
     print("Req. No. 5. Transportar obras de un departamento.")
     print("Req. No. 6 (Bono). Proponer una nueva exposición en el museo.")
     print("7. Req. Lab5. n obras más antiguas para un medio específico.")
@@ -84,6 +83,13 @@ def printloadData():
                         'Adquisición': 40, 'Dimensiones': 40}
     print(answ1)
     print("La función de cargar datos demoró "+str(elapsed_time_mseg)+' ms.')
+
+    # entry = mp.get(catalog['IDartists'], 710)
+    # artist_dict = me.getValue(entry)
+    # artist = artist_dict['DisplayName']
+    # artist_exists = mp.contains(catalog['mediumsByArtist'], artist)
+    # print(artist_exists)
+
     return catalog
 
 
@@ -150,15 +156,14 @@ def printReq3():
     print("======================= Req No. 3 Inputs =========================")
     print("Examinar el trabajo del artista de nombre: "+artist)
     print("====================== Req No. 3 Respuesta =======================")
-    print("El artista "+artist+' tiene '+str(number_of_artworks)
-          +' obras en el MoMA.')
-    print('Usó '+str(number_of_mediums)+' medios o técnicas distintas en su trabajo.')
-    print('La técnica que más usó es: '+str(most_used)+'. La usó en '+str(times_used)+' obras')
-    print('El listado de las obras de dicha técnica es: ')
-    print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
+    print("Total de obras de "+artist+' en el MoMA: '+str(number_of_artworks)+'.')
+    print('Total técnicas (medios) utilizados: '+str(number_of_mediums)+'.')
+    print('El nombre de la técnica más utilizada es: '+str(most_used)+'.')
+    print('Usó la técnica '+str(most_used)+' en '+str(times_used)+' obras.')
+    print('\nEl listado de las obras de dicha técnica es: \n')
     answ = PrettyTable(['Título','Fecha','Adquisición','Medio',
                         'Dimensiones'])
-    for i in [1,2,3,0,-1,-2]:        
+    for i in range(times_used):        
         answ.add_row([lt.getElement(muestra, i)['Title'],
                       lt.getElement(muestra, i)['Date'],
                       lt.getElement(muestra, i)['DateAcquired'],
