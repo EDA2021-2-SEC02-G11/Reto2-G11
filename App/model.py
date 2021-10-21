@@ -45,66 +45,56 @@ def newCatalog():
     """
     catalog = {}
 
-    catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')
+    ## Load Data
+
+    catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # Used in Req 4.
     catalog['artworks'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # 138150
     catalog['IDartists'] = mp.newMap(15223,  # N. ContituentID
                                      maptype='PROBING',
                                      loadfactor=0.2,
                                      comparefunction=compareKeys)
 
-    # Requirement 1
+    ## Requirement 1
 
     catalog['artistsByBeginDate'] = mp.newMap(236,  # N. 'BeginDate'
-                                              maptype='PROBING',
-                                              loadfactor=0.2,
-                                              comparefunction=compareKeys)
+                                             maptype='PROBING',
+                                             loadfactor=0.2,
+                                             comparefunction=compareKeys)
 
-    # Requirement 2
+    ## Requirement 2
 
     catalog['ArtworksByDateAcquired'] = mp.newMap(93,  # N. year 'DateAcquired'
-                                                  maptype='PROBING',
-                                                  loadfactor=0.2,
-                                                  comparefunction=compareKeys)
+                                                 maptype='PROBING',
+                                                 loadfactor=0.2,
+                                                 comparefunction=compareKeys)
 
-    # Requirement 3
+    ## Requirement 3
 
-    catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
-                                           maptype='PROBING',
-                                           loadfactor=0.2,
-                                           comparefunction=compareKeys)
+    # catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
+    #                                        maptype='PROBING',
+    #                                        loadfactor=0.2,
+    #                                        comparefunction=compareKeys)
 
-    # Requirement 4
+    ## Requirement 4 / Lab 6. keys:nationalities, value:artworks by nationality.
 
-    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
-                                         maptype='PROBING',
-                                         loadfactor=0.2,
-                                         comparefunction=compareKeys)
+    #catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
+    #                                     maptype='PROBING',
+    #                                     loadfactor=0.2,
+    #                                     comparefunction=compareKeys)
 
-    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
-                                         maptype='PROBING',
-                                         loadfactor=0.2,
-                                         comparefunction=compareKeys)
-
-    # Requirement 5
+    ## Requirement 5
 
     catalog['departments'] = mp.newMap(8,  # N. departments in 'large'
-                                       maptype='PROBING',
-                                       loadfactor=0.2,
-                                       comparefunction=compareKeys)
+                                      maptype='PROBING',
+                                      loadfactor=0.2,
+                                      comparefunction=compareKeys)
 
     # LAB 5. key: 'Medium', value: array of artworks by medium.
 
-    catalog['mediums'] = mp.newMap(21251,  # N. 'Medium'
-                                   maptype='PROBING',
-                                   loadfactor=0.2,
-                                   comparefunction=compareKeys)
-
-    # LAB 6. key: 'Nationality', value: array of artworks by nationality.
-
-    catalog['nationalities'] = mp.newMap(119,  # N. nationalities in 'large'
-                                         maptype='PROBING',
-                                         loadfactor=0.2,
-                                         comparefunction=compareKeys)
+    #catalog['mediums'] = mp.newMap(21251,  # N. 'Medium'
+    #                               maptype='PROBING',
+    #                               loadfactor=0.2,
+    #                               comparefunction=compareKeys)
 
     return catalog
 
@@ -112,26 +102,23 @@ def newCatalog():
 
 
 def addArtist(catalog, artist):
-    addArtistByBeginDate(catalog, artist)
+    addArtistByBeginDate(catalog, artist)  # Requirement 1
     addIDArtist(catalog, artist)
-    lt.addLast(catalog['artists'], artist)
+    lt.addLast(catalog['artists'], artist)  # LoadData. Used in Req 4.
 
 
 def addArtwork(catalog, artwork):
-    """
-    Esta función adiciona un obra a la lista de obras,
-    Lo guarda en un Map usando como llave su medio.
-    """
-    lt.addLast(catalog['artworks'], artwork)
+    lt.addLast(catalog['artworks'], artwork)  # LoadData
+    addArtworksByDateAcquired(catalog, artwork)  # Requirement 2
     ids = artwork['ConstituentID']
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
-        addNationality(catalog, id_, artwork)
-        addArtistMedium(catalog, id_, artwork)
-    addDepartment(catalog, artwork)
-    addMedium(catalog,  id_, artwork)
-    addArtworksByDateAcquired(catalog, artwork)
+        # addArtistMedium(catalog, id_, artwork)  # Requirement 3
+        #addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
+    addDepartment(catalog, artwork)  # Requirement 5
+    #addMedium(catalog,  id_, artwork)  # Lab 5
+    
 
 # ID Artist
 
@@ -160,7 +147,7 @@ def getArtistFromID(catalog, ids):
         string += artist+', '
     return string[:-2]
 
-# Requirement 1
+## Requirement 1
 
 
 def addArtistByBeginDate(catalog, artist):
@@ -226,7 +213,7 @@ def requirement1(catalog, initial_year, final_year):
     return count, muestra
 
 
-# Requirement 2
+## Requirement 2
 
 def addArtworksByDateAcquired(catalog, artwork):
     """
@@ -333,29 +320,100 @@ def requirement2(catalog, fecha1, fecha2):
 
 
 def addArtistMedium(catalog, id_, artwork):
-    id_exists = mp.contains(catalog['mediumsByArtist'], id_)
-    if id_exists:
-        entry = mp.get(catalog['mediumsByArtist'], id_)
+    entry = mp.get(catalog['IDartists'], id_)
+    artist_dict = me.getValue(entry)
+    artist = artist_dict['DisplayName']
+    artist_exists = mp.contains(catalog['mediumsByArtist'], artist)
+    if artist_exists:
+        entry = mp.get(catalog['mediumsByArtist'], artist)
         value = me.getValue(entry)
     else:
         value = newMediumStructure()
-        mp.put(catalog['mediumsByArtist'], id_, value)
-    fillMediumStructure(value, id_, artwork)
+        mp.put(catalog['mediumsByArtist'], artist, value)
+    fillMediumStructure(value, artist, artwork)
 
 
 def newMediumStructure():
-    structure = {'total':0,
-                 'size': 0,
+    structure = {'number_of_artworks':0,
+                 'number_of_mediums': 0,
                  'most_used': None,
                  'times_used': 0,
-                 'artworks': lt.newList('ARRAY_LIST', key='Date')}
+                 'mediums': None}
     return structure
 
 
-def fillMediumStructure(structure, id_, artwork):
-    lt.addLast(structure['artworks'], artwork)
+def fillMediumStructure(structure, artist, artwork):
+    structure['mediums'] = mp.newMap(21251,  # N. 'Medium'
+                                     maptype='PROBING',
+                                     loadfactor=0.2,
+                                     comparefunction=compareKeys)
+    medium = artwork['Medium']
+    medium_exists = mp.contains(structure['mediums'], medium)
+    if medium_exists:
+        entry = mp.get(structure['mediums'], medium)
+        artworks_per_medium = me.getValue(entry)
+    else:
+        artworks_per_medium = newArtworksPerMedium()
+        mp.put(structure['mediums'], medium, artworks_per_medium)
+        structure['number_of_mediums'] += 1
+        if lt.size(artworks_per_medium) > structure['times_used']:
+            structure['times_used'] = lt.size(artworks_per_medium)
+            structure['most_used'] = medium
+    lt.addLast(artworks_per_medium, artwork)
+    structure['number_of_artworks'] += 1
 
-# Requirement 4
+
+def newArtworksPerMedium():
+    artworks_per_medium = lt.newList('ARRAY_LIST', compareArtworks_DateAcquired)
+    return artworks_per_medium
+
+
+def requirement3(catalog, artist):
+    entry = mp.get(catalog['mediumsByArtist'], artist)
+    structure = me.getValue(entry)
+    number_of_artworks = structure['number_of_artworks']
+    number_of_mediums = structure['number_of_mediums']
+    most_used = structure['most_used']
+    times_used = structure['times_used']
+    entry2 = mp.get(structure['mediums'], most_used)
+    artworks_most_used = me.getValue(entry2)
+    muestra = lt.subList(artworks_most_used, 1, 6)
+    return number_of_artworks, number_of_mediums, most_used, times_used, muestra 
+
+
+# LAB 5
+
+
+def addMedium(catalog,  id_, artwork):
+    """
+    Esta función adiciona un medio o técnica al map de medios.
+    Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
+    """
+    mediumkey = artwork['Medium']
+    existmedium = mp.contains(catalog['mediums'], mediumkey)
+    if existmedium:
+        entry = mp.get(catalog['mediums'], mediumkey)
+        mediumvalue = me.getValue(entry)
+    else:
+        mediumvalue = newMedium(mediumkey)
+        mp.put(catalog['mediums'], mediumkey, mediumvalue)
+    lt.addLast(mediumvalue['artworks'], artwork)
+    mediumvalue['size'] += 1
+
+
+def newMedium(medium):
+    """
+    Crea una nueva estructura para modelar los medios o técnicas. 
+    Se crea una lista para las obras de dicho medio.
+    """
+    mediums = {'medium': '',
+               'artworks': None,
+               'size': 0}
+    mediums['medium'] = medium
+    mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
+    return mediums
+
+## Requirement 4
 
 def addNationality(catalog, id_, artwork):
     """
@@ -430,40 +488,7 @@ def compareArtworksByDate(artwork1, artwork2):
         return -1
     return 0
 
-# LAB 5
-
-
-def addMedium(catalog,  id_, artwork):
-    """
-    Esta función adiciona un medio o técnica al map de medios.
-    Cuando se adiciona el medio se actualiza la cantidad de obras de dicho medio.
-    """
-    mediumkey = artwork['Medium']
-    existmedium = mp.contains(catalog['mediums'], mediumkey)
-    if existmedium:
-        entry = mp.get(catalog['mediums'], mediumkey)
-        mediumvalue = me.getValue(entry)
-    else:
-        mediumvalue = newMedium(mediumkey)
-        mp.put(catalog['mediums'], mediumkey, mediumvalue)
-    lt.addLast(mediumvalue['artworks'], artwork)
-    mediumvalue['size'] += 1
-
-
-def newMedium(medium):
-    """
-    Crea una nueva estructura para modelar los medios o técnicas. 
-    Se crea una lista para las obras de dicho medio.
-    """
-    mediums = {'medium': '',
-               'artworks': None,
-               'size': 0}
-    mediums['medium'] = medium
-    mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
-    return mediums
-
-
-# Requirement 5
+## Requirement 5
 
 def addDepartment(catalog, artwork):
     department = artwork['Department']

@@ -135,8 +135,8 @@ def printReq2():
                       lt.getElement(muestra, i)['DateAcquired'],
                       lt.getElement(muestra, i)['Medium'],
                       lt.getElement(muestra, i)['Dimensions']])
-    answ._max_width = {'Título':40,'Artista(s)':20,'Fecha':15,'Adquisición':15,
-                       'Medio':20,'Dimensiones':40}
+    answ._max_width = {'Título':20,'Artista(s)':20,'Fecha':15,'Adquisición':15,
+                       'Medio':20,'Dimensiones':20}
     print(answ)
     stop_time = time.process_time()
     elapsed_time_mseg = (stop_time - start_time)*1000
@@ -145,7 +145,31 @@ def printReq2():
 
 def printReq3():
     artist = input("Ingrese el nombre del artista: ")
-    #start_time = time.process_time()
+    start_time = time.process_time()
+    number_of_artworks, number_of_mediums, most_used, times_used, muestra = controller.requirement3(catalog, artist)
+    print("======================= Req No. 3 Inputs =========================")
+    print("Examinar el trabajo del artista de nombre: "+artist)
+    print("====================== Req No. 3 Respuesta =======================")
+    print("El artista "+artist+' tiene '+str(number_of_artworks)
+          +' obras en el MoMA.')
+    print('Usó '+str(number_of_mediums)+' medios o técnicas distintas en su trabajo.')
+    print('La técnica que más usó es: '+str(most_used)+'. La usó en '+str(times_used)+' obras')
+    print('El listado de las obras de dicha técnica es: ')
+    print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
+    answ = PrettyTable(['Título','Fecha','Adquisición','Medio',
+                        'Dimensiones'])
+    for i in [1,2,3,0,-1,-2]:        
+        answ.add_row([lt.getElement(muestra, i)['Title'],
+                      lt.getElement(muestra, i)['Date'],
+                      lt.getElement(muestra, i)['DateAcquired'],
+                      lt.getElement(muestra, i)['Medium'],
+                      lt.getElement(muestra, i)['Dimensions']])
+    answ._max_width = {'Título':20,'Fecha':15,'Adquisición':15,
+                       'Medio':20,'Dimensiones':20}
+    print(answ)
+    stop_time = time.process_time()
+    elapsed_time_mseg = (stop_time - start_time)*1000
+    print("Se demoró: ",str(elapsed_time_mseg))
 
 
 def printReq4(catalog):
