@@ -128,7 +128,7 @@ def printReq2():
     print("======================== Req No. 2 Inputs ========================")
     print("Obras adquiridas entre "+fecha1+" y "+fecha2)
     print("======================== Req No. 2 Respuesta =====================")
-    print("El MoMA adquirió "+str(count)+" obras entre "+fecha1+'y'+fecha2+".")
+    print("El MoMA adquirió "+str(count)+" obras entre "+fecha1+' y '+fecha2+".")
           # de las cuales compró ",str(num_purchased))
     print('\nPrimeras y últimas tres obras adquiridas en el rango de fechas:\n')
     answ = PrettyTable(['Título','Artista(s)','Fecha','Adquisición','Medio',

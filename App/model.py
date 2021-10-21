@@ -47,7 +47,7 @@ def newCatalog():
 
     ## Load Data
 
-    catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # Used in Req 4.
+    catalog['artists'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # 15223 Used in Req 4.
     catalog['artworks'] = lt.newList('ARRAY_LIST', key='ConstituentID')  # 138150
     catalog['IDartists'] = mp.newMap(15223,  # N. ContituentID
                                      maptype='PROBING',
@@ -70,7 +70,7 @@ def newCatalog():
 
     ## Requirement 3
 
-    catalog['mediumsByArtist'] = mp.newMap(100,  # N. 'Medium'
+    catalog['mediumsByArtist'] = mp.newMap(15223,  # N. 'Medium'
                                            maptype='PROBING',
                                            loadfactor=0.2,
                                            comparefunction=compareKeys)
@@ -114,25 +114,26 @@ Nota: Si no se quiere incluir un requerimiento, por ejemplo al realizar
 """
 
 def addArtist(catalog, artist):
-    addArtistByBeginDate(catalog, artist)  # Requirement 1
+    # addArtistByBeginDate(catalog, artist)  # Requirement 1
     addIDArtist(catalog, artist)
     lt.addLast(catalog['artists'], artist)  # LoadData. Used in Req 4.
 
 
 def addArtwork(catalog, artwork):
     lt.addLast(catalog['artworks'], artwork)  # LoadData
-    addArtworksByDateAcquired(catalog, artwork)  # Requirement 2
+    # addArtworksByDateAcquired(catalog, artwork)  # Requirement 2
     ids = artwork['ConstituentID']
     ids = ids[1:-1].split(",")
     for id_ in ids:
         id_ = int(id_.strip())
         addArtistMedium(catalog, id_, artwork)  # Requirement 3
         # addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
-    addDepartment(catalog, artwork)  # Requirement 5
+    # addDepartment(catalog, artwork)  # Requirement 5
     # addMedium(catalog,  id_, artwork)  # Lab 5
 
 
 # ID Artist
+
 
 def addIDArtist(catalog, artist):
     try:
@@ -158,6 +159,7 @@ def getArtistFromID(catalog, ids):
     for artist in artists:
         string += artist+', '
     return string[:-2]
+
 
 ## Requirement 1
 
@@ -427,7 +429,9 @@ def newMedium(medium):
     mediums['artworks'] = lt.newList('ARRAY_LIST', key='Date')
     return mediums
 
+
 ## Requirement 4
+
 
 def addNationality(catalog, id_, artwork):
     """
@@ -502,7 +506,9 @@ def compareArtworksByDate(artwork1, artwork2):
         return -1
     return 0
 
+
 ## Requirement 5
+
 
 def addDepartment(catalog, artwork):
     department = artwork['Department']
@@ -579,6 +585,7 @@ def calculateCost(artwork):
 
 # Función de comparación genérica
 
+
 def compareKeys(key, entry):
     """
     Compares key with entry
@@ -596,6 +603,7 @@ def compareKeys(key, entry):
 
 
 # Funciones de ordenamiento
+
 
 def sortDate(lista):
     sorted_list = mer.sort(lista, compareArtworks_DateAcquired)
