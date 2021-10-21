@@ -70,10 +70,10 @@ def newCatalog():
 
     ## Requirement 3
 
-    # catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
-    #                                        maptype='PROBING',
-    #                                        loadfactor=0.2,
-    #                                        comparefunction=compareKeys)
+    catalog['mediumsByArtist'] = mp.newMap(21251,  # N. 'Medium'
+                                           maptype='PROBING',
+                                           loadfactor=0.2,
+                                           comparefunction=compareKeys)
 
     ## Requirement 4 / Lab 6. keys:nationalities, value:artworks by nationality.
 
@@ -98,8 +98,20 @@ def newCatalog():
 
     return catalog
 
+
 # Funciones para agregar información al catalogo invocadas por controller.py
 
+
+"""
+Nota: Si no se quiere incluir un requerimiento, por ejemplo al realizar
+      pruebas, basta con comentar la línea respectiva en solamente una de las
+      dos funciones de abajo, addArtist o addArtwork. 
+
+      Eso evita que todo lo relacionado con ese requisito se ejecute al cargar
+      datos, a excepción de la creación de un mapa vacío en el catálogo (eso 
+      último se puede evitar comentando el bloque de código que crea el map en
+      el catálogo).
+"""
 
 def addArtist(catalog, artist):
     addArtistByBeginDate(catalog, artist)  # Requirement 1
@@ -118,7 +130,7 @@ def addArtwork(catalog, artwork):
         #addNationality(catalog, id_, artwork)  # Requirement 4 / Lab 6
     addDepartment(catalog, artwork)  # Requirement 5
     #addMedium(catalog,  id_, artwork)  # Lab 5
-    
+
 
 # ID Artist
 
